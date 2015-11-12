@@ -503,6 +503,7 @@ public:
 
 		if (s.flag)
 		{
+			//Yang: using sprintf_s instead of sprintf
 			sprintf_s(buf, "flags: %s%s%s%s",
 				s.flag & CV_CALIB_USE_INTRINSIC_GUESS ? " +use_intrinsic_guess" : "",
 				s.flag & CV_CALIB_FIX_ASPECT_RATIO ? " +fix_aspectRatio" : "",
