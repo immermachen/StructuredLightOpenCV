@@ -67,7 +67,7 @@ bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool use
 	//imwrite("Textura.bmp", 0);
 	namedWindow("Patrones");
 
-	HWND win_handle = FindWindow(0, "Patrones");
+	HWND win_handle = FindWindowA(0, "Patrones"); 
 	if (!win_handle)
 	{
 		printf("Failed FindWindow\n");

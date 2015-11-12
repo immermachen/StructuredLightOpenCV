@@ -103,7 +103,7 @@ namespace calibrate {
 		{
 			InitializeComponent();
 			//
-			//TODO: agregar código de constructor aquí
+			//TODO: agregar código de constructor aqu?
 			//
 		}
 
