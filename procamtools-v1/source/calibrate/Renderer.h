@@ -6,7 +6,8 @@
 #include <assimp/postprocess.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <GL/glut.h>
+//#include <GL/glut.h>
+#include <glut.h>
 //#include <GL\freeglut.h>
 #include "MathBaseLapack.h"
 #include "MiscUtil.h"
