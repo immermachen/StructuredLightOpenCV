@@ -483,7 +483,8 @@ public:
 
 		time_t tm;
 		time(&tm);
-		struct tm *t2 = localtime(&tm);
+		struct tm *t2;
+		localtime_s(t2, &tm);
 		char buf[1024];
 		strftime(buf, sizeof(buf)-1, "%c", t2);
 
@@ -502,7 +503,7 @@ public:
 
 		if (s.flag)
 		{
-			sprintf(buf, "flags: %s%s%s%s",
+			sprintf_s(buf, "flags: %s%s%s%s",
 				s.flag & CV_CALIB_USE_INTRINSIC_GUESS ? " +use_intrinsic_guess" : "",
 				s.flag & CV_CALIB_FIX_ASPECT_RATIO ? " +fix_aspectRatio" : "",
 				s.flag & CV_CALIB_FIX_PRINCIPAL_POINT ? " +fix_principal_point" : "",
