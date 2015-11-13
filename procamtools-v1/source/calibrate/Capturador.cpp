@@ -41,6 +41,7 @@ CCapturador::CCapturador(COptions* opt, string ruta) :  m_Options(opt)
 		string temp = oss.str();
 		Mat pattern = imread(oss.str(), 1);
 		m_vPatterns.push_back(pattern);
+		std::cout << "Yang:CCapturador-->Load pattern:" << temp << std::endl;
 		oss.clear();
 	}
 
