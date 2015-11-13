@@ -483,10 +483,10 @@ public:
 
 		time_t tm;
 		time(&tm);
-		struct tm *t2;
-		localtime_s(t2, &tm);
+		struct tm t2;//Yang: use localtime_s instead of localtime
+		localtime_s(&t2, &tm);
 		char buf[1024];
-		strftime(buf, sizeof(buf)-1, "%c", t2);
+		strftime(buf, sizeof(buf)-1, "%c", &t2);
 
 		fs << "calibration_Time" << buf;
 
