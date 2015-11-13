@@ -171,21 +171,29 @@ bool CCapturador::SerializeCaptures(vector<Mat> imagenes,string str,bool b16)
 {
  	int tiempo = time(NULL);
 	std::ostringstream oss1;
-    oss1 << "cd ..//resources//Captures & mkdir "<<str<<"-" << tiempo;
-	system(oss1.str().c_str());
+
+	//Yang: no write right from imwrite using this kind of method;
+    //oss1 << "cd ..//resources//Captures & mkdir "<<str<<"-" << tiempo;
+	//system(oss1.str().c_str());
+
 	for (int i = 0; i < imagenes.size(); i++)
 	{
 		std::ostringstream oss;
-		string ruta = "Captures/";
+		string ruta = "../resources/Captures/";
 		if (i<10)
-			oss << ruta << str << "-" << tiempo << "/Capture-0" << i << ".bmp";
+			//oss << ruta << str << "-" << tiempo << "/Capture-0" << i << ".bmp";
+			oss << ruta << str << "/Capture-0" << i << ".bmp";
 		else
-			oss << ruta << str << "-" << tiempo << "/Capture-" << i << ".bmp";
+			//oss << ruta << str << "-" << tiempo << "/Capture-" << i << ".bmp";
+			oss << ruta << str << "/Capture-" << i << ".bmp";
 		ruta = oss.str();
 		//if (b16)
 		//	cvSave(oss.str().c_str(),  imagenes[i].data);
-		imagenes[i].convertTo(imagenes[i], CV_8UC1);
-			imwrite(oss.str(),  imagenes[i]);
+		imagenes[i].convertTo(imagenes[i], CV_8UC1);		
+		if(imwrite(ruta.c_str(),  imagenes[i]))
+			std::cout << "SerializeCaptures --> imwrite: " << oss.str() << std::endl;
+		else
+			std::cout << "Error: SerializeCaptures --> imwrite: " << oss.str() << std::endl;
 		oss.clear();
 	}
 	return true;
