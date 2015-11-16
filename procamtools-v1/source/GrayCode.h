@@ -176,7 +176,7 @@ void UnwrapPhase(const Field<2,float> &phase, const int period, const Field<2,fl
 
 			float diff = abs(gray_phase - moire_phase);
 			if (diff < window) {
-				result.cell(x, y) = graycode - (graycode % period) + period * moire_phase;
+				result.cell(x, y) = graycode - (graycode % period) + period * moire_phase;//Yang:????
 			} else {
 				result.cell(x, y) = graycode;
 			}
