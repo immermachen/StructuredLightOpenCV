@@ -97,7 +97,7 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 	//m_mGray[0] = MaskMat(m_mGray[0], m_mMask[0],false);
 	//m_mGray[1] = MaskMat(m_mGray[1], m_mMask[0],false);
 	temp.push_back(m_mMask[0]);
-	//cap.SerializeCaptures(temp, "mask");
+	cap.SerializeCaptures(temp, "mask");
 	return true;
 }
 
@@ -118,11 +118,22 @@ void CDecoder::DecodeGray(int dir,float int_threshold)
 			float BrightesPixel = std::max(maxVal, maxValComp);
 			Mat difference;
 			difference = m - m1;
+
+			//Yang: debug
+			std::ostringstream oos, ossThr;
+			oos << "diff" << dir << "-"<<i << ".bmp";
+			imwrite(oos.str(), difference);
+
 			diff.insert(diff.begin(), difference);
 			float threshold = BrightesPixel*int_threshold;
 			Mat result;
 			m_fDivisor[dir] = BrightesPixel / m_Info->GetNumBits(dir);
 			cv::threshold(difference, result, threshold, m_fDivisor[dir], CV_THRESH_BINARY);
+
+			//Yang: debug
+			ossThr << "diff-threhold" << dir << "-" << i << ".bmp";
+			imwrite(ossThr.str(), result);
+
 			m_mGrayError[dir] += result;
 		}
 		else
@@ -140,7 +151,7 @@ void CDecoder::DecodeGray(int dir,float int_threshold)
 	}
 	m_mGray[dir] = Mat::zeros(diff[0].rows,diff[0].cols,CV_16UC1);
 	m_mGray[dir] = DecodeBinToGray(diff);
-
+	
 }
 
 Mat CDecoder::DecodeBinToGray(vector<Mat> diff)
