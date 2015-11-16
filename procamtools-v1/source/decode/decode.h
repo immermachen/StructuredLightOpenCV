@@ -35,19 +35,19 @@ public:
 			for (int i=0; i<2*nbits; i++)
 				slib::image::Read(images[i], *it++);
 
-			decode_gray(images,0);
+			decode_gray(images,0); //step1: yang: get m_gray_error and m_gray_map
 			generate_mask(0);
 
 			images.resize(m_options.num_fringes);
 			for (int i=0; i<m_options.num_fringes; i++)
 				slib::image::Read(images[i],*it++);
 
-			decode_phase(images,0);
+			decode_phase(images,0); //step2: Yang : get m_phase_error, and m_phase_map which is improved from m_gray_map;
 
 			if (m_options.debug)
 				dump_images(0);
 
-			convert_reliable_map(0);
+			convert_reliable_map(0);//step3: yang: compare m_gray_error and m_phase_error by threhold to get final mask=m_phase_error
 		}
 
 		if (m_options.vertical) 
@@ -72,7 +72,7 @@ public:
 			convert_reliable_map(1);
 		}
 
-		// merge masks and reliable maps
+		//step4: merge masks and reliable maps
 		if (m_options.horizontal && m_options.vertical) 
 		{
 			for (int y = 0; y < m_mask[1].size(1); y++) 
@@ -81,6 +81,7 @@ public:
 				{
 					if (!m_mask[1].cell(x, y))
 						m_mask[0].cell(x, y) = 0;
+					//step4: yang: finally m_phase_error[0] is result mask from [0] and [1]!!!
 					m_phase_error[0].cell(x,y) = std::min(m_phase_error[0].cell(x,y),m_phase_error[1].cell(x,y));
 				}
 			}
@@ -160,8 +161,19 @@ private:
 	void decode_phase(const std::vector<slib::Field<2,float>>& images, int direction)
 	{
 		DecodePhaseCodeImages(images, m_phase_map[direction]);
+		
+		//Yang
+		char *suffix = direction ? "v" : "h";
+		slib::Field<2, float> tmp = m_phase_map[direction];
+		slib::Field<2, slib::CVector<3, float>> rgb;
+		slib::image::ConvertToJetMap(tmp, rgb);
+		slib::image::Write(m_phase_map[direction], slib::format("phase_map-%s.bmp", suffix));
 
 		UnwrapPhase(m_phase_map[direction], m_options.fringe_interval*m_options.num_fringes, m_gray_map[direction], m_phase_map[direction], m_phase_error[direction]);
+
+		//Yang
+		slib::image::ConvertToJetMap(m_phase_map[direction], rgb);
+		slib::image::Write(m_phase_map[direction], slib::format("phase_map-%s_unwrapped.bmp", suffix));
 	}
 
 	void dump_images(int direction) const
