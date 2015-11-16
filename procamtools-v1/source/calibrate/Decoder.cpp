@@ -130,7 +130,7 @@ void CDecoder::DecodeGray(int dir,float int_threshold)
 			m_fDivisor[dir] = BrightesPixel / m_Info->GetNumBits(dir);
 			cv::threshold(difference, result, threshold, m_fDivisor[dir], CV_THRESH_BINARY);
 
-			//Yang: debug
+			//Yang:debug
 			ossThr << "diff-threhold" << dir << "-" << i << ".bmp";
 			imwrite(ossThr.str(), result);
 
