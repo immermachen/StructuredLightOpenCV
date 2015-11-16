@@ -23,7 +23,7 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 		m_mMask[0] = Mat::zeros(m_mGray[0].rows,m_mGray[0].cols, CV_8UC1);
 		cv::threshold(m_mGrayError[0], m_mMask[0], thres, 255, CV_THRESH_BINARY);
 		m_mMask[0].convertTo(m_mMask[0], CV_16UC1);
-		/*
+		
 		if (m_Info->m_bPhase)
 		{
             vector<Mat>::iterator begin = m_vCaptures.begin() + m_Info->m_nNumPatterns / 2;
@@ -34,8 +34,8 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 			UnwrapPhase(m_mPhaseMap[0], m_Info->m_nFringeInterval*m_Info->m_nNumFringes, m_mGray[0], m_mPhaseMap[0], m_mPhaseError[0]);
 		}
 		else
-			*/
-		m_mPhaseError[0] = Mat(m_mGray[0].rows, m_mGray[0].cols, CV_32FC1);
+			m_mPhaseError[0] = Mat(m_mGray[0].rows, m_mGray[0].cols, CV_32FC1);
+
 		CreateReliableMap(0);
 		m_mGray[0] = MaskMat(m_mGray[0], m_mMask[0],true);
 		temp.push_back(m_mGrayError[0]);
@@ -54,7 +54,7 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 		m_mMask[1] = Mat::zeros(m_mGray[1].rows, m_mGray[1].cols, CV_8UC1);
 		cv::threshold(m_mGrayError[1], m_mMask[1], thres, 255, CV_THRESH_BINARY);
 		m_mMask[1].convertTo(m_mMask[1], CV_16UC1);
-		/*
+		
 		if (m_Info->m_bPhase)
 		{
             vector<Mat>::iterator begin = m_vCaptures.begin() + m_Info->m_nBasePatterns + m_Info->m_nNumPatterns / 2;
@@ -64,8 +64,9 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 			m_mPhaseMap[1] = DecodePhaseImages(phaseImgs, 1);
 			UnwrapPhase(m_mPhaseMap[1], m_Info->m_nFringeInterval*m_Info->m_nNumFringes, m_mGray[1], m_mPhaseMap[1], m_mPhaseError[1]);
 		}
-		else*/
-		m_mPhaseError[1] = Mat(m_mGray[1].rows, m_mGray[1].cols, CV_32FC1);
+		else
+			m_mPhaseError[1] = Mat(m_mGray[1].rows, m_mGray[1].cols, CV_32FC1);
+
 		CreateReliableMap(1);
 		m_mGray[1] = MaskMat(m_mGray[1], m_mMask[1],true);
 		temp.push_back(m_mGrayError[1]);
