@@ -227,7 +227,7 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 		tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
 		imagenames.push_back("m_mMap1Phase_Final");
 
-		//show difference 
+		//show difference between 
 		Mat diff0 = m_mGray[0].clone();
 		Mat diff1 = m_mGray[0].clone();
 		for (int x = 0; x < m_mGray[0].rows; x++)
