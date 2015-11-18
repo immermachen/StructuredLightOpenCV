@@ -113,6 +113,7 @@ void CDecoder::DecodeGray(int dir,float int_threshold)
 		{
 			double maxVal, maxValComp, minVal, minValComp;
 			
+			//Yang
 			int numphase = 0;
 			if (m_Info->m_bPhase && dir == 1)
 			{
