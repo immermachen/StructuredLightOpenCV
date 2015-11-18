@@ -16,14 +16,38 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 	m_vCorrespondencePoints[1].clear();
 	CCapturador cap;
 	vector<Mat> temp;
+	vector<string> imagenames;
+	Mat tmp;
+	double minVal, maxVal;
+
 	if (m_Info->m_bHorizontal)
 	{
 		DecodeGray(0, 0.1);
 		//Mascarear
 		m_mMask[0] = Mat::zeros(m_mGray[0].rows,m_mGray[0].cols, CV_8UC1);
 		cv::threshold(m_mGrayError[0], m_mMask[0], thres, 255, CV_THRESH_BINARY);
-		m_mMask[0].convertTo(m_mMask[0], CV_16UC1);
-		
+		m_mMask[0].convertTo(m_mMask[0], CV_16UC1);		
+
+		tmp = m_mGray[0].clone();
+		tmp.convertTo(tmp, CV_8UC1, 255 / 1024.0, 0);
+		temp.push_back(tmp);
+		imagenames.push_back("m_mMap0Gray");
+
+		m_mGray[0] = MaskMat(m_mGray[0], m_mMask[0], true);
+
+		tmp = m_mGray[0].clone();
+		tmp.convertTo(tmp, CV_8UC1, 255 / 1024.0, 0);
+		temp.push_back(tmp);
+		imagenames.push_back("m_mGray0_Masked");
+
+		tmp = m_mMask[0].clone();
+		temp.push_back(tmp);
+		imagenames.push_back("m_mMask0");
+
+		tmp = m_mGrayError[0].clone();
+		temp.push_back(tmp);
+		imagenames.push_back("m_mErrorGray0");
+
 		if (m_Info->m_bPhase)
 		{
             vector<Mat>::iterator begin = m_vCaptures.begin() + m_Info->m_nNumPatterns / 2;
@@ -31,21 +55,43 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 
 			vector<Mat> phaseImgs(begin, end);
 			m_mPhaseMap[0] = DecodePhaseImages(phaseImgs, 0);
+
+			tmp = m_mPhaseMap[0].clone();  //CV_32FC1
+			tmp.convertTo(tmp, CV_8UC1, 255, 0);
+			temp.push_back(tmp);
+			imagenames.push_back("m_mMapPhase0_decode");
+
 			UnwrapPhase(m_mPhaseMap[0], m_Info->m_nFringeInterval*m_Info->m_nNumFringes, m_mGray[0], m_mPhaseMap[0], m_mPhaseError[0]);
+
+			tmp = m_mPhaseMap[0].clone();
+			minMaxIdx(tmp, &minVal, &maxVal);
+			cout << maxVal << endl;
+			tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
+			temp.push_back(tmp);
+			imagenames.push_back("m_mMap0Phase");
 		}
 		else
 			m_mPhaseError[0] = Mat(m_mGray[0].rows, m_mGray[0].cols, CV_32FC1);
 
+
+		tmp = m_mPhaseError[0].clone();
+		//std::cout << tmp << endl;
+		tmp.convertTo(tmp, CV_8UC1, 255,0);
+		temp.push_back(tmp);
+		imagenames.push_back("m_mErrorPhase0");
+		
 		CreateReliableMap(0);
-		m_mGray[0] = MaskMat(m_mGray[0], m_mMask[0],true);
-		temp.push_back(m_mGrayError[0]);
-		temp.push_back(m_mMask[0]);
-		//Mat temp1 = Mat(m_mGray[0].rows,m_mGray[0].cols,CV_8UC1);
-		//m_mGray[0].convertTo(temp1, CV_8UC1, 255 / 1024.0, 0);
-		temp.push_back(m_mGray[0]);
-		//temp.push_back(temp1);
-		temp.push_back(m_mPhaseError[0]);
-		//imshow("Correspondence X", temp1);
+
+		tmp = m_mPhaseError[0].clone();
+		temp.push_back(tmp);
+		imagenames.push_back("m_mMask0_Reliable");
+
+		m_mPhaseMap[0] = MaskMat(m_mPhaseMap[0], m_mPhaseError[0], true);
+
+		tmp = m_mPhaseMap[0].clone();
+		tmp.convertTo(tmp, CV_8UC1, 255 / 1024.0, 0);
+		temp.push_back(tmp);
+		imagenames.push_back("m_mMap0Phase_Masked");
 	}
 	if (m_Info->m_bVertical)
 	{
@@ -55,6 +101,26 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 		cv::threshold(m_mGrayError[1], m_mMask[1], thres, 255, CV_THRESH_BINARY);
 		m_mMask[1].convertTo(m_mMask[1], CV_16UC1);
 		
+		tmp = m_mGray[1].clone();
+		tmp.convertTo(tmp, CV_8UC1, 255 / 1024.0, 0);
+		temp.push_back(tmp);
+		imagenames.push_back("m_mMap1Gray");
+
+		m_mGray[1] = MaskMat(m_mGray[1], m_mMask[1], true);
+
+		tmp = m_mGray[1].clone();
+		tmp.convertTo(tmp, CV_8UC1, 255 / 1024.0, 0);
+		temp.push_back(tmp);
+		imagenames.push_back("m_mGray1_Masked");
+
+		tmp = m_mMask[1].clone();
+		temp.push_back(tmp);
+		imagenames.push_back("m_mMask1");
+
+		tmp = m_mGrayError[1].clone();
+		temp.push_back(tmp);
+		imagenames.push_back("m_mErrorGray1");
+
 		if (m_Info->m_bPhase)
 		{
             vector<Mat>::iterator begin = m_vCaptures.begin() +  m_Info->m_nNumPatterns + m_Info->m_nNumFringes;
@@ -62,21 +128,46 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 
 			vector<Mat> phaseImgs(begin, end);
 			m_mPhaseMap[1] = DecodePhaseImages(phaseImgs, 1);
+
+			tmp = m_mPhaseMap[1].clone();  //CV_32FC1
+			tmp.convertTo(tmp, CV_8UC1, 255, 0);
+			temp.push_back(tmp);
+			imagenames.push_back("m_mMapPhase1_decode");
+
 			UnwrapPhase(m_mPhaseMap[1], m_Info->m_nFringeInterval*m_Info->m_nNumFringes, m_mGray[1], m_mPhaseMap[1], m_mPhaseError[1]);
+
+			tmp = m_mPhaseMap[1].clone();
+			tmp.convertTo(tmp, CV_8UC1, 255 / 1024.0, 0);
+			cvtColor(tmp, tmp, CV_GRAY2BGR);
+			temp.push_back(tmp);
+			imagenames.push_back("m_mMap1Phase");
 		}
 		else
 			m_mPhaseError[1] = Mat(m_mGray[1].rows, m_mGray[1].cols, CV_32FC1);
 
+		tmp = m_mPhaseError[1].clone();		
+		tmp.convertTo(tmp,CV_8UC1,255,0);
+		temp.push_back(tmp);
+		imagenames.push_back("m_mErrorPhase1");
+
 		CreateReliableMap(1);
-		m_mGray[1] = MaskMat(m_mGray[1], m_mMask[1],true);
-		temp.push_back(m_mGrayError[1]);
-		temp.push_back(m_mMask[1]);
-		//Mat temp1 = Mat(m_mGray[1].rows, m_mGray[1].cols, CV_8UC1);
-		//m_mGray[1].convertTo(temp1, CV_8UC1, 255 / 1024.0, 0);
-		//imshow("Correspondence Y", temp1);
-		temp.push_back(m_mGray[1]);
-		//temp.push_back(temp1);
-		temp.push_back(m_mPhaseError[1]);
+
+		tmp = m_mPhaseError[1].clone();
+		temp.push_back(tmp);
+		imagenames.push_back("m_mMask1_Reliable");
+
+		m_mPhaseMap[1] = MaskMat(m_mPhaseMap[1], m_mPhaseError[1], true);
+
+		tmp = m_mPhaseMap[1].clone();
+		//tmp.convertTo(tmp, CV_8UC1, 255 / 1024.0, 0);
+
+		minMaxIdx(tmp, &minVal, &maxVal);
+		cout << "m_mPhaseMap rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
+		tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
+
+		temp.push_back(tmp);
+		imagenames.push_back("m_mMap1Phase_Masked");
+
 	}
 	if (m_Info->m_bHorizontal&&m_Info->m_bVertical)
 	{
@@ -87,18 +178,89 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 				m_mMask[0].at<ushort>(x, y) = 0;
 			m_mPhaseError[0].at<float>(x, y) = std::min(m_mPhaseError[0].at<float>(x, y), m_mPhaseError[1].at<float>(x, y));
 		}
-		for (int y = 0; y < m_mMask[1].cols; y++)
-		for (int x = 0; x < m_mMask[1].rows; x++)
-			if (!m_mMask[0].at<ushort>(x, y))
+		//////for (int y = 0; y < m_mMask[1].cols; y++)
+		//////	for (int x = 0; x < m_mMask[1].rows; x++)
+		//////	{
+		//////		if (!m_mMask[0].at<ushort>(x, y))
+		//////		{
+		//////			m_mGray[0].at<ushort>(x, y) = 0;
+		//////			m_mGray[1].at<ushort>(x, y) = 0;
+		//////		}
+		//////		if (!m_mPhaseError[0].at<ushort>(x, y))
+		//////		{
+		//////			m_mPhaseMap[0].at<ushort>(x, y) = 0;
+		//////			m_mPhaseMap[1].at<ushort>(x, y) = 0;
+		//////		}
+		//////	}
+		tmp = m_mMask[0].clone();
+		temp.push_back(tmp);
+		imagenames.push_back("m_mMaskGray_Final");
+		tmp = m_mPhaseError[0].clone();
+		temp.push_back(tmp);
+		imagenames.push_back("m_mMaskPhase_Final");
+
+		m_mGray[0] = MaskMat(m_mGray[0], m_mMask[0], true);
+		m_mGray[1] = MaskMat(m_mGray[1], m_mMask[0], true);
+		m_mPhaseMap[0] = MaskMat(m_mPhaseMap[0], m_mPhaseError[0], true);
+		m_mPhaseMap[1] = MaskMat(m_mPhaseMap[1], m_mPhaseError[0], true);
+
+		tmp = m_mGray[0].clone();
+		tmp.convertTo(tmp, CV_8UC1, 255 / 1024.0, 0);
+		temp.push_back(tmp);
+		imagenames.push_back("m_mMap0Gray_Final");
+
+		tmp = m_mGray[1].clone();
+		cout << "m_mGray rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
+		tmp.convertTo(tmp, CV_8UC1, 255 / 1024.0, 0);
+		temp.push_back(tmp);
+		imagenames.push_back("m_mMap1Gray_Final");
+		
+		tmp = m_mPhaseMap[0].clone();
+		minMaxIdx(tmp, &minVal, &maxVal);
+		cout << "m_mPhaseMap rows=" << tmp.rows << ", cols=" << tmp.cols<< ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
+		tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
+		imagenames.push_back("m_mMap0Phase_Final");
+
+		tmp = m_mPhaseMap[1].clone();
+		minMaxIdx(tmp, &minVal, &maxVal);
+		cout << "m_mPhaseMap rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
+		tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
+		imagenames.push_back("m_mMap1Phase_Final");
+
+		//show difference 
+		Mat diff0 = m_mGray[0].clone();
+		Mat diff1 = m_mGray[0].clone();
+		for (int x = 0; x < m_mGray[0].rows; x++)
+		{
+			for (int y = 0; y < m_mGray[0].cols; y++)
 			{
-				m_mGray[0].at<ushort>(x, y) = 0;
-				m_mGray[1].at<ushort>(x, y) = 0;
+				diff0.at<float>(x, y) = abs(m_mPhaseMap[0].at<float>(x, y) - m_mGray[0].at<float>(x, y));
+				diff1.at<float>(x, y) = abs(m_mPhaseMap[1].at<float>(x, y) - m_mGray[1].at<float>(x, y));
 			}
-	}
-	//m_mGray[0] = MaskMat(m_mGray[0], m_mMask[0],false);
-	//m_mGray[1] = MaskMat(m_mGray[1], m_mMask[0],false);
-	temp.push_back(m_mMask[0]);
-	//cap.SerializeCaptures(temp, "mask");
+		}
+
+		//double minVal, maxVal, minValComp, maxValComp;
+		//minMaxIdx(diff0, &minVal, &maxVal);
+		//minMaxIdx(diff1, &minValComp, &maxValComp);
+		//float BrightesPixel = std::max(maxVal, maxValComp);
+
+		//diff0.convertTo(tmp, CV_8UC1, 255 / BrightesPixel, 0);
+		//temp.push_back(diff0);
+		//imagenames.push_back("m_mDiff0");
+
+		//diff1.convertTo(diff1, CV_8UC1, 255 / BrightesPixel, 0);
+		//temp.push_back(diff1);
+		//imagenames.push_back("m_mDiff1");
+
+		//cout << m_mGray[0] << endl;
+
+		m_mGray[0] = m_mPhaseMap[0].clone();
+		m_mGray[1] = m_mPhaseMap[1].clone();
+
+		//cout << m_mGray[0] << endl;
+	}		
+
+	cap.SerializeCaptures(temp, imagenames);
 	return true;
 }
 
@@ -249,41 +411,57 @@ Mat CDecoder::DecodePhaseImages(vector<Mat>& img, int dir)
 void CDecoder::UnwrapPhase(Mat& phase, int period, Mat& reference, Mat& result, Mat& unwrap_error)
 {
 	float window = 2.0 / period;
-	result = Mat(phase);
-	unwrap_error = Mat(phase);
+	//Yang: bug, shit!!!!!!!!!!!
+	//result = Mat(phase);
+	//unwrap_error = Mat(phase);
+	result = phase.clone();
+	unwrap_error = phase.clone();
 	for (int y = 0; y < phase.cols;y++)
 	for (int x = 0; x < phase.rows; x++)
 	{
-		int graycode = reference.at<ushort>(x, y);
-		float moire_phase = phase.at<float>(x, y);
-		float gray_phase = (float)(graycode % period) / period;
+		int graycode = reference.at<ushort>(x, y);//[0 1024], e.g. =11
+		float moire_phase = phase.at<float>(x, y); //correct:[0 1],  false case:[-2 2] maybe? so need to correct it. e.g. = 1.3
+		float gray_phase = (float)(graycode % period) / period; //[0 1], e.g. =(11%4)/4=0.75
         if (!moire_phase)
 		{
 			result.at<float>(x, y) = graycode;
 			unwrap_error.at<float>(x, y) = 0.5;
 			continue;
 		}
-		if (moire_phase >= gray_phase + 0.5)
-			moire_phase -= 1;
+		if (moire_phase >= gray_phase + 0.5)    //Now correct the phase value if it not in [0 1], e.g. = 1.3 > 0.75+0.5
+			moire_phase -= 1;                   // e.g.=0.3
 		else if (moire_phase < gray_phase - 0.5)
 			moire_phase += 1;
 
 		float diff = abs(gray_phase - moire_phase);
 		if (diff < window)
-			result.at<float>(x, y) = graycode - (graycode % period) + period * moire_phase;
+		{
+			float newval = graycode - (graycode % period) + period * moire_phase; //e.g.: 11-(11%4)+4*0.3 = 9.2
+			if (newval < 0)   //TODO: Yang: check this:::: how to deal with negative value???
+			{
+				result.at<float>(x, y) = graycode; 
+			}
+			else
+			{
+				result.at<float>(x, y) = newval;
+			}
+		}
 		else
-			result.at<float>(x, y) = graycode;
-		unwrap_error.at<float>(x, y) = diff;
+		{
+			result.at<float>(x, y) = graycode;  //e.g. = 11
+		}
+		
+		unwrap_error.at<float>(x, y) = diff;   //[0 1]
 	}
 }
 
 void CDecoder::CreateReliableMap(int dir)
 {
-	//float maxError = 2.0 / m_Info->m_nNumFringes;
+	float maxError = 2.0 / m_Info->m_nNumFringes;
 	Mat& reliable = m_mPhaseError[dir];
 	for (int y = 0; y < reliable.cols;y++)
 		for (int x = 0; x < reliable.rows; x++)
-			if (/*reliable.at<float>(x, y) < maxError  && */m_mGrayError[dir].at<uchar>(x, y) > m_fDivisor[dir]*2)
+			if (reliable.at<float>(x, y) < maxError  && m_mGrayError[dir].at<uchar>(x, y) > m_fDivisor[dir]*2)
 				reliable.at<float>(x, y) = 255;
 			else
 				reliable.at<float>(x, y) = 0;

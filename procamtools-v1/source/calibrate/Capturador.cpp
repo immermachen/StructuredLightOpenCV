@@ -226,6 +226,20 @@ bool CCapturador::SerializeCaptures(vector<Mat> imagenes, string str)
 	return true;
 }
 
+
+bool CCapturador::SerializeCaptures(vector<Mat> imagenes, vector<string> strs, const string& type)
+{
+	for (int i = 0; i < imagenes.size(); i++)
+	{
+		std::ostringstream oss;
+		oss << strs[i] << type;
+		string    ruta = oss.str();
+		imagenes[i].convertTo(imagenes[i], CV_8UC1);
+		imwrite(oss.str(), imagenes[i]);
+		oss.clear();
+	}
+	return true;
+}
 string CCapturador::SerializeCapturesDefault(vector<Mat> imagenes, string str)
 {
 	int tiempo = time(NULL);

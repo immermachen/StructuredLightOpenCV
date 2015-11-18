@@ -33,6 +33,7 @@ public:
 	bool CapturePatterns(int time, int device, int posX, int posY, bool useComp);
 	bool CapturePatternsUndisorted(Mat& CameraMatrix, Mat& DistVect,int time);
 	static bool SerializeCaptures(vector<Mat> imagenes, string str);
+	static bool SerializeCaptures(vector<Mat> imagenes, vector<string> strs, const string& type = ".bmp");//Yang
 	static string SerializeCapturesDefault(vector<Mat> imagenes, string str);
 	bool tryCamera(int device);
 	~CCapturador();
