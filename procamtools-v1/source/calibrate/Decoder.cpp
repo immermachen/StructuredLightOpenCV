@@ -57,8 +57,8 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 		
 		if (m_Info->m_bPhase)
 		{
-            vector<Mat>::iterator begin = m_vCaptures.begin() + m_Info->m_nBasePatterns + m_Info->m_nNumPatterns / 2;
-            vector<Mat>::iterator end = m_vCaptures.begin() + m_Info->m_nNumPatterns + m_Info->m_nNumFringes;
+            vector<Mat>::iterator begin = m_vCaptures.begin() +  m_Info->m_nNumPatterns + m_Info->m_nNumFringes;
+            vector<Mat>::iterator end = m_vCaptures.begin() + m_Info->m_nNumPatterns + m_Info->m_nNumFringes*2;
 
 			vector<Mat> phaseImgs(begin, end);
 			m_mPhaseMap[1] = DecodePhaseImages(phaseImgs, 1);
@@ -112,8 +112,15 @@ void CDecoder::DecodeGray(int dir,float int_threshold)
 		if (m_Info->m_bComplementary)
 		{
 			double maxVal, maxValComp, minVal, minValComp;
-			Mat m = m_vCaptures[dir*(m_Info->m_nBasePatterns * 2) + 2 * i].clone();
-			Mat m1 = m_vCaptures[dir*(m_Info->m_nBasePatterns * 2) + 2 * i + 1].clone();
+			
+			int numphase = 0;
+			if (m_Info->m_bPhase && dir == 1)
+			{
+				numphase = m_Info->m_nNumFringes;
+			}
+			Mat m = m_vCaptures[dir*(m_Info->m_nBasePatterns * 2) + 2 * i + numphase].clone();
+			Mat m1 = m_vCaptures[dir*(m_Info->m_nBasePatterns * 2) + 2 * i + 1 + numphase].clone();
+			
 			minMaxIdx(m, &minVal, &maxVal);
 			minMaxIdx(m1, &minValComp, &maxValComp);
 			float BrightesPixel = std::max(maxVal, maxValComp);
