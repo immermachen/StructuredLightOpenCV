@@ -705,30 +705,6 @@ namespace calibrate {
 
 						 UpdateDispaly();
 
-						 ////if (m_Cap->m_vCaptures.size()>0)
-						 ////{
-							//// Mat b;
-							//// cvtColor(m_Cap->m_vCaptures[0], b, CV_GRAY2RGB);
-							//// DrawCvImage(&(IplImage)b, pictureCapture);
-							//// m_decoder->m_Info->m_bComplementary = true;
-							//// int thress = 25 * comboBoxThress->SelectedIndex;
-							//// bool captura = m_decoder->Decode(thress, m_Cap->m_vCaptures);
-							//// if (captura)
-							//// {
-							////	 Mat b;
-							////	 m_decoder->m_mMask[0].convertTo(b, CV_8UC1);
-							////	 cvtColor(b, b, CV_GRAY2RGB);
-							////	 DrawCvImage(&(IplImage)b, pictureMask);
-							////	 Mat temp1 = Mat(m_decoder->m_mGray[0].rows, m_decoder->m_mGray[0].cols, CV_8UC1);
-							////	 m_decoder->m_mGray[0].convertTo(temp1, CV_8UC1, 255 / 1024.0, 0);
-							////	 cvtColor(temp1, b, CV_GRAY2RGB);
-							////	 DrawCvImage(&(IplImage)b, pictureCorrX);
-							////	 m_decoder->m_mGray[1].convertTo(temp1, CV_8UC1, 255 / 1024.0, 0);
-							////	 cvtColor(temp1, b, CV_GRAY2RGB);
-							////	 DrawCvImage(&(IplImage)b, pictureCorrY);
-							//// }
-						 ////}
-
 						 myStream->Close();
 					 }
 				 }
@@ -866,31 +842,6 @@ namespace calibrate {
 				 if (captura)
 				 {
 					 UpdateDispaly();
-
-					 ////if (m_Cap->m_vCaptures.size() > 0)
-					 ////{
-						//// Mat b;
-						//// cvtColor(m_Cap->m_vCaptures[0], b, CV_GRAY2RGB);
-						//// DrawCvImage(&(IplImage)b, pictureCapture);
-					 ////}
-					 ////m_decoder->m_Info->m_bComplementary = true;
-					 ////int thress = 25 * comboBoxThress->SelectedIndex;
-					 ////captura = m_decoder->Decode(thress, m_Cap->m_vCaptures);
-					 ////if (captura)
-					 ////{
-						//// Mat b,c;
-						//// m_decoder->m_mMask[0].convertTo(c, CV_8UC1);
-						//// cvtColor(c, b, CV_GRAY2RGB);
-						//// DrawCvImage(&(IplImage)b, pictureMask);
-						//// Mat temp1 = Mat(m_decoder->m_mGray[0].rows, m_decoder->m_mGray[0].cols, CV_8UC1);
-						//// m_decoder->m_mGray[0].convertTo(temp1, CV_8UC1, 255 / 1024.0, 0);
-						//// cvtColor(temp1, b, CV_GRAY2RGB);
-						//// DrawCvImage(&(IplImage)b, pictureCorrX);
-						//// m_decoder->m_mGray[1].convertTo(temp1, CV_8UC1, 255 / 1024.0, 0);
-						//// cvtColor(temp1, b, CV_GRAY2RGB);
-						//// DrawCvImage(&(IplImage)b, pictureCorrY);
-
-					 ////}
 				 }
 				 captureToolStripMenuItem->Enabled = true;
 
@@ -1375,26 +1326,6 @@ namespace calibrate {
 	private: System::Void comboBoxThress_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e)
 	{
 		UpdateDispaly();
-
-				 ////if (m_Cap->m_vCaptures.size() == 0)
-					//// return;
-				 ////int thress = 25 * comboBoxThress->SelectedIndex;
-				 ////bool captura = m_decoder->Decode(thress, m_Cap->m_vCaptures);
-				 ////if (captura)
-				 ////{
-					//// Mat b, c;
-					//// m_decoder->m_mMask[0].convertTo(c, CV_8UC1);
-					//// cvtColor(c, b, CV_GRAY2RGB);
-					//// DrawCvImage(&(IplImage)b, pictureMask);
-					//// Mat temp1 = Mat(m_decoder->m_mGray[0].rows, m_decoder->m_mGray[0].cols, CV_8UC1);
-					//// m_decoder->m_mGray[0].convertTo(temp1, CV_8UC1, 255 / 1024.0, 0);
-					//// cvtColor(temp1, b, CV_GRAY2RGB);
-					//// DrawCvImage(&(IplImage)b, pictureCorrX);
-					//// m_decoder->m_mGray[1].convertTo(temp1, CV_8UC1, 255 / 1024.0, 0);
-					//// cvtColor(temp1, b, CV_GRAY2RGB);
-					//// DrawCvImage(&(IplImage)b, pictureCorrY);
-
-				 ////}
 	}
 	};
 }
