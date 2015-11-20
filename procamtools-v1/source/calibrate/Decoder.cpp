@@ -228,16 +228,18 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 		imagenames.push_back("m_mMap1Phase_Final");
 
 		//show difference between 
-		Mat diff0 = m_mGray[0].clone();
-		Mat diff1 = m_mGray[0].clone();
-		for (int x = 0; x < m_mGray[0].rows; x++)
-		{
-			for (int y = 0; y < m_mGray[0].cols; y++)
-			{
-				diff0.at<float>(x, y) = abs(m_mPhaseMap[0].at<float>(x, y) - m_mGray[0].at<float>(x, y));
-				diff1.at<float>(x, y) = abs(m_mPhaseMap[1].at<float>(x, y) - m_mGray[1].at<float>(x, y));
-			}
-		}
+		//Mat diff0 = m_mGray[0].clone();
+		//Mat diff1 = m_mGray[0].clone();
+		////for (int x = 0; x < m_mGray[0].rows; x++)
+		////{
+		////	for (int y = 0; y < m_mGray[0].cols; y++)
+		////	{
+		////		diff0.at<float>(x, y) = abs(m_mPhaseMap[0].at<float>(x, y) - m_mGray[0].at<float>(x, y));
+		////		diff1.at<float>(x, y) = abs(m_mPhaseMap[1].at<float>(x, y) - m_mGray[1].at<float>(x, y));
+		////	}
+		////}
+		Mat diff0 = m_mPhaseMap[0] - m_mGray[0];
+		Mat diff1 = m_mPhaseMap[1] - m_mGray[1];
 
 		//double minVal, maxVal, minValComp, maxValComp;
 		//minMaxIdx(diff0, &minVal, &maxVal);

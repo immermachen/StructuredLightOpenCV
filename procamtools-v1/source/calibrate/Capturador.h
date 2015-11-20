@@ -2,8 +2,9 @@
 #include <vector>
 #include "opencv2/opencv.hpp"
 #include <time.h>
+#include "VirtualCamera.h"
 using namespace std;
-using namespace cv;
+using namespace cv; 
 
 class COptions
 {
@@ -30,6 +31,7 @@ public:
 	Mat m_mTextura;
 	COptions* m_Options;
 	VideoCapture m_VideoCapture;
+	VirtualCamera *camera;
 	bool CapturePatterns(int time, int device, int posX, int posY, bool useComp);
 	bool CapturePatternsUndisorted(Mat& CameraMatrix, Mat& DistVect,int time);
 	static bool SerializeCaptures(vector<Mat> imagenes, string str);

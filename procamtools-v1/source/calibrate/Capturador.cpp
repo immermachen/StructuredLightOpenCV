@@ -30,7 +30,7 @@ CCapturador::CCapturador(COptions* opt, string ruta) :  m_Options(opt)
 		m_Options->m_nNumPatterns *= 2;
 	if (m_Options->m_bComplementary)
 		m_Options->m_nNumPatterns *= 2;
-	m_nPatterns = m_Options->m_nNumPatterns;
+	m_nPatterns = m_Options->m_nNumPatterns + m_Options->m_nNumFringes * 2;
 	for (int i = 0; i < m_nPatterns; i++)
 	{
 		std::ostringstream oss;
@@ -45,18 +45,24 @@ CCapturador::CCapturador(COptions* opt, string ruta) :  m_Options(opt)
 		oss.clear();
 	}
 
+	// Initialize camera
+	camera = VirtualCamera::NewCamera(0, 0, triggerModeSoftware);
 }
 
 bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool useComp)
 {
 	m_vCaptures.clear();
 	
-	//VideoCapture cap(0); // open the default camera
-	if (!m_VideoCapture.isOpened())  // check if we succeeded
-		m_VideoCapture = VideoCapture(device);
-	if (!m_VideoCapture.isOpened())
-		return false;
-		
+	//if (!m_VideoCapture.isOpened())  // check if we succeeded
+	//	m_VideoCapture = VideoCapture(device);
+	//if (!m_VideoCapture.isOpened())
+	//	return false;
+	
+	camera->startCapture();
+	//if (!camera->isCapturing)
+	//	return false;
+
+
 	//VideoCapture cap(0);
 	//if (!cap.isOpened())
 	//	return -1;
@@ -94,9 +100,22 @@ bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool use
 	for (int i = 0;;)
 	{
 		imshow("Patrones", m_vPatterns[i]);
-		Mat frame;
-		m_VideoCapture >> frame;
-		//imshow("Camera", frame);
+		
+		CameraFrame camframe;
+		//m_VideoCapture >> frame;
+		camframe = camera->getFrame();
+		Mat frame(camframe.height, camframe.width,CV_8U, camframe.memory);
+		frame = frame.clone();
+
+		//---debug--------------------------------------------------------
+		// Create 8 bit OpenCV matrix 
+		std::stringstream oss;
+		oss << "frameSeq_0" << i << ".bmp";
+		string str = oss.str();
+		cv::imwrite(str, frame);
+		//debug end-----------------------------------------------------
+
+
 		B = GetTickCount();
 		int C = B - A;
 		if (C>time || waitKey(30) >= 0)
@@ -106,8 +125,8 @@ bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool use
 			{
 				i++;
 				Mat capture = frame.clone();
-				Mat gray;
-				cv::cvtColor(capture, gray, CV_BGR2GRAY);
+				Mat gray = capture;
+				//cv::cvtColor(capture, gray, CV_BGR2GRAY);
 				m_vCaptures.push_back(gray);
 				if (++nPatterns >= m_nPatterns)
 				{
@@ -128,13 +147,16 @@ bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool use
 					break;
 			}
 			else
-				printf("Error: no caputre info.\n");
+				printf("Error: no caputure info.\n");
 			A = GetTickCount();
 		};
 	}
-	cout << "Patrones capturados." << endl;
+	cout << "Pattern Captured." << endl;
 	cvDestroyWindow("Patrones");
 	//cvDestroyWindow("Camera");
+	
+	camera->stopCapture();
+	
 	return true;
 }
 
@@ -319,20 +341,34 @@ bool CCapturador::LoadCapturesFromFilesUndisorted(string ruta,Mat& CameraMatrix,
 
 bool CCapturador::tryCamera(int device)
 {
-	if (!m_VideoCapture.isOpened())  // check if we succeeded
-		m_VideoCapture = VideoCapture(device);
-	if (!m_VideoCapture.isOpened())
-		return false;
+	
+	//////if (!m_VideoCapture.isOpened())  // check if we succeeded
+	//////	m_VideoCapture = VideoCapture(device);
+	//////if (!m_VideoCapture.isOpened())
+	//////	return false;
+
+
+	camera->startCapture();
+	//if (!camera->isCapturing)
+	//	return false;
+
+
 	char key = 0;
 	Mat frame;
 	while (key==-1||key==0)
 	{
-		m_VideoCapture >> frame;
+		//m_VideoCapture >> frame;
+		CameraFrame camFrame = camera->getFrame();
+		Mat curFrame(camFrame.height, camFrame.height, CV_8U, camFrame.memory);
+		frame = curFrame.clone();
+
 		if (!frame.empty())
 			imshow("Camara", frame);
 		key = cvWaitKey(30);
 	}
 	cvvDestroyWindow("Camara");
+
+	return true;
 }
 
 CCapturador::~CCapturador()

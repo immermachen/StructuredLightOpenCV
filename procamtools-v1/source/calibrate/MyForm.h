@@ -634,8 +634,9 @@ namespace calibrate {
 #pragma endregion
 	private: System::Void MyForm_Load(System::Object^  sender, System::EventArgs^  e)
 	{
-				 m_options = new COptions(1024, 768, 10, 4, true, true, true, true, true);
-				 string ruta = "../resources/Patterns/pattern-0";
+				 m_options = new COptions(1920, 1080, 11, 4, true, true, true, true, true);
+
+				 string ruta = "../resources/Patterns/1920-1080/pattern-0";
 				 m_Cap = new CCapturador(m_options, ruta);
 				 m_renderer = new Renderer();
 				 m_bShowWebcam = false;
@@ -828,14 +829,14 @@ namespace calibrate {
 	private: System::Void startCaptureToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e)
 	{
 				 captureToolStripMenuItem->Enabled = false;
-				 if (!m_bShowWebcam)
-				 {
-					 m_bShowWebcam = true;
-					 backgroundWorker1->RunWorkerAsync(10);
-				 }
-				 while (m_bStartingWorker)
-				 {
-				 }
+				 ////////////////////if (!m_bShowWebcam)
+				 ////////////////////{
+					//////////////////// m_bShowWebcam = true;
+					//////////////////// backgroundWorker1->RunWorkerAsync(10);
+				 ////////////////////}
+				 ////////////////////while (m_bStartingWorker)
+				 ////////////////////{
+				 ////////////////////}
 				 m_bCapturating = true;
 				 bool captura = m_Cap->CapturePatterns(Convert::ToDouble(textBoxTime->Text), 0, Convert::ToInt32(textBoxProyX->Text), Convert::ToInt32(textBoxProyY->Text), true);
 				 m_bCapturating = false;
@@ -1260,8 +1261,11 @@ namespace calibrate {
 	}
 
 	private: System::Void MyForm_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
-				 if (m_Cap->m_VideoCapture.isOpened())
-					 m_Cap->m_VideoCapture.release();
+				 //if (m_Cap->m_VideoCapture.isOpened())
+					// m_Cap->m_VideoCapture.release();
+		//if (m_Cap->camera->isCapturing)
+			m_Cap->camera->stopCapture();
+
 	}
 	private: System::Void exportAsOBJToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e)
 	{

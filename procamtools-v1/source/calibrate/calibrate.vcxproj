@@ -55,11 +55,12 @@
     <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <ExecutablePath>C:\Program Files\Intel\MKL\10.2.6.037\ia32\bin;C:\D\assimp-3.1.1-win-binaries\bin32;$(ExecutablePath)</ExecutablePath>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\D\glut-3.7.6-bin;C:\D\assimp-3.1.1-win-binaries\include;C:\Program Files\Intel\MKL\10.2.6.037\include;$(SolutionDir)/common;$(SolutionDir)/levmar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VIMBA_HOME);$(VIMBA_HOME)\ThirdParty\TinyXML\Include;C:\D\glut-3.7.6-bin;C:\D\assimp-3.1.1-win-binaries\include;C:\Program Files\Intel\MKL\10.2.6.037\include;$(SolutionDir)/common;$(SolutionDir)/levmar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -70,7 +71,7 @@
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\D\assimp-3.1.1-win-binaries\lib32;C:\D\glut-3.7.6-bin;C:\Program Files\Intel\MKL\10.2.6.037\ia32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(VIMBA_HOME)\ThirdParty\TinyXML\Lib\Win$(PlatformArchitecture);$(VIMBA_HOME)\VimbaCPP\Lib\Win$(PlatformArchitecture);C:\D\assimp-3.1.1-win-binaries\lib32;C:\D\glut-3.7.6-bin;C:\Program Files\Intel\MKL\10.2.6.037\ia32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -90,7 +91,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>C:\D\glut-3.7.6-bin;C:\D\assimp-3.1.1-win-binaries\include;C:\Program Files\Intel\MKL\10.2.6.037\include;$(SolutionDir)/common;$(SolutionDir)/levmar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VIMBA_HOME);$(VIMBA_HOME)\ThirdParty\TinyXML\Include;C:\D\glut-3.7.6-bin;C:\D\assimp-3.1.1-win-binaries\include;C:\Program Files\Intel\MKL\10.2.6.037\include;$(SolutionDir)/common;$(SolutionDir)/levmar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -99,18 +100,21 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\D\assimp-3.1.1-win-binaries\lib32;C:\D\glut-3.7.6-bin;C:\Program Files\Intel\MKL\10.2.6.037\ia32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(VIMBA_HOME)\VimbaCPP\Lib\Win$(PlatformArchitecture);$(VIMBA_HOME)\ThirdParty\TinyXML\Lib\Win$(PlatformArchitecture);C:\D\assimp-3.1.1-win-binaries\lib32;C:\D\glut-3.7.6-bin;C:\Program Files\Intel\MKL\10.2.6.037\ia32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalDependencies>assimp.lib;opengl32.lib;mkl_intel_c.lib;mkl_intel_thread.lib;mkl_core.lib;libiomp5md.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>assimp.lib;opengl32.lib;mkl_intel_c.lib;mkl_intel_thread.lib;mkl_core.lib;libiomp5md.lib;VimbaCPP.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\FundamentalMatrix.cpp" />
+    <ClCompile Include="Bitmap.cpp" />
+    <ClCompile Include="VirtualCamera.cpp" />
+    <ClCompile Include="CameraVimba.cpp" />
     <ClCompile Include="Capturador.cpp" />
     <ClCompile Include="Decoder.cpp" />
     <ClCompile Include="main.cpp" />
@@ -124,6 +128,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bitmap.h" />
     <ClInclude Include="calibrate.h" />
     <ClInclude Include="..\..\common\CameraCalibration.h" />
     <ClInclude Include="..\FundamentalMatrix.h" />
@@ -134,7 +139,11 @@
     <ClInclude Include="..\..\common\MathBaseLapack.h" />
     <ClInclude Include="..\Options.h" />
     <ClInclude Include="..\ransac.h" />
+    <ClInclude Include="VirtualCamera.h" />
+    <ClInclude Include="CameraVimba.h" />
     <ClInclude Include="Capturador.h" />
+    <ClInclude Include="Common\ErrorCodeToMessage.h" />
+    <ClInclude Include="Common\StreamSystemInfo.h" />
     <ClInclude Include="Decoder.h" />
     <ClInclude Include="MatrixUtil.h" />
     <ClInclude Include="MyForm.h">
