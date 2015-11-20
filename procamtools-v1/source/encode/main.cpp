@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
 		//if (argc != 2)
 		//	print_usage(argv[0]);
 		options_t opciones;
+		opciones.load("options.ini"); // 1920*1080 projector
 		CEncode encode(opciones);
 		int nimages = encode.GetNumImages();
 
