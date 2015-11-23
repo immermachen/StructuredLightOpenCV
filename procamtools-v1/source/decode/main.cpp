@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
 	try
 	{
 		options_t opciones;// = new COptions(1024, 768, 10, 4, true, false, true, false);
+		opciones.load("options.ini");
 		// parse commandline options
 	//	if (argc < 2) print_usage(argv[0]);
 		std::vector<std::string> files(48);
