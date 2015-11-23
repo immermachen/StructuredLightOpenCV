@@ -63,7 +63,7 @@ public:
 	void myMouseMove(int x, int y)
 	{
 		g_mX = x;
-		g_mY = 768 - y;
+		g_mY = 768 - y;//768
 		printf("%d", g_mX);
 		glutPostRedisplay();
 	}

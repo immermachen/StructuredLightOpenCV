@@ -29,14 +29,14 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 		m_mMask[0].convertTo(m_mMask[0], CV_16UC1);		
 
 		tmp = m_mGray[0].clone();
-		tmp.convertTo(tmp, CV_8UC1, 255 / 1024.0, 0);
+		tmp.convertTo(tmp, CV_8UC1, 255 / (m_Info->m_nWidth*1.0f), 0);
 		temp.push_back(tmp);
 		imagenames.push_back("m_mMap0Gray");
 
 		m_mGray[0] = MaskMat(m_mGray[0], m_mMask[0], true);
 
 		tmp = m_mGray[0].clone();
-		tmp.convertTo(tmp, CV_8UC1, 255 / 1024.0, 0);
+		tmp.convertTo(tmp, CV_8UC1, 255 / (m_Info->m_nWidth*1.0f), 0);
 		temp.push_back(tmp);
 		imagenames.push_back("m_mGray0_Masked");
 
@@ -74,24 +74,24 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 			m_mPhaseError[0] = Mat(m_mGray[0].rows, m_mGray[0].cols, CV_32FC1);
 
 
-		tmp = m_mPhaseError[0].clone();
-		//std::cout << tmp << endl;
-		tmp.convertTo(tmp, CV_8UC1, 255,0);
-		temp.push_back(tmp);
-		imagenames.push_back("m_mErrorPhase0");
+		////////////tmp = m_mPhaseError[0].clone();
+		//////////////std::cout << tmp << endl;
+		////////////tmp.convertTo(tmp, CV_8UC1, 255,0);
+		////////////temp.push_back(tmp);
+		////////////imagenames.push_back("m_mErrorPhase0");
 		
-		CreateReliableMap(0);
+		CreateReliableMap(0,m_Info->m_bPhase);
 
 		tmp = m_mPhaseError[0].clone();
 		temp.push_back(tmp);
 		imagenames.push_back("m_mMask0_Reliable");
 
-		m_mPhaseMap[0] = MaskMat(m_mPhaseMap[0], m_mPhaseError[0], true);
+		////////////m_mPhaseMap[0] = MaskMat(m_mPhaseMap[0], m_mPhaseError[0], true);
 
-		tmp = m_mPhaseMap[0].clone();
-		tmp.convertTo(tmp, CV_8UC1, 255 / 1024.0, 0);
-		temp.push_back(tmp);
-		imagenames.push_back("m_mMap0Phase_Masked");
+		////////////tmp = m_mPhaseMap[0].clone();
+		////////////tmp.convertTo(tmp, CV_8UC1, 255 / (m_Info->m_nWidth*1.0f), 0);
+		////////////temp.push_back(tmp);
+		////////////imagenames.push_back("m_mMap0Phase_Masked");
 	}
 	if (m_Info->m_bVertical)
 	{
@@ -102,14 +102,14 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 		m_mMask[1].convertTo(m_mMask[1], CV_16UC1);
 		
 		tmp = m_mGray[1].clone();
-		tmp.convertTo(tmp, CV_8UC1, 255 / 1024.0, 0);
+		tmp.convertTo(tmp, CV_8UC1, 255 / (m_Info->m_nWidth*1.0f), 0);
 		temp.push_back(tmp);
 		imagenames.push_back("m_mMap1Gray");
 
 		m_mGray[1] = MaskMat(m_mGray[1], m_mMask[1], true);
 
 		tmp = m_mGray[1].clone();
-		tmp.convertTo(tmp, CV_8UC1, 255 / 1024.0, 0);
+		tmp.convertTo(tmp, CV_8UC1, 255 / (m_Info->m_nWidth*1.0f), 0);
 		temp.push_back(tmp);
 		imagenames.push_back("m_mGray1_Masked");
 
@@ -135,9 +135,9 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 			imagenames.push_back("m_mMapPhase1_decode");
 
 			UnwrapPhase(m_mPhaseMap[1], m_Info->m_nFringeInterval*m_Info->m_nNumFringes, m_mGray[1], m_mPhaseMap[1], m_mPhaseError[1]);
-
+			//m_mPhaseMap = graycode, but it is float [1.0 1920.0]
 			tmp = m_mPhaseMap[1].clone();
-			tmp.convertTo(tmp, CV_8UC1, 255 / 1024.0, 0);
+			tmp.convertTo(tmp, CV_8UC1, 255 / (m_Info->m_nWidth*1.0f), 0);
 			cvtColor(tmp, tmp, CV_GRAY2BGR);
 			temp.push_back(tmp);
 			imagenames.push_back("m_mMap1Phase");
@@ -145,28 +145,25 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 		else
 			m_mPhaseError[1] = Mat(m_mGray[1].rows, m_mGray[1].cols, CV_32FC1);
 
-		tmp = m_mPhaseError[1].clone();		
-		tmp.convertTo(tmp,CV_8UC1,255,0);
-		temp.push_back(tmp);
-		imagenames.push_back("m_mErrorPhase1");
+		//////////tmp = m_mPhaseError[1].clone();		
+		//////////tmp.convertTo(tmp,CV_8UC1,255,0);
+		//////////temp.push_back(tmp);
+		//////////imagenames.push_back("m_mErrorPhase1");
 
-		CreateReliableMap(1);
+		CreateReliableMap(1, m_Info->m_bPhase);
 
 		tmp = m_mPhaseError[1].clone();
 		temp.push_back(tmp);
 		imagenames.push_back("m_mMask1_Reliable");
 
-		m_mPhaseMap[1] = MaskMat(m_mPhaseMap[1], m_mPhaseError[1], true);
+		////////////m_mPhaseMap[1] = MaskMat(m_mPhaseMap[1], m_mPhaseError[1], true);
+		////////////tmp = m_mPhaseMap[1].clone();
+		////////////minMaxIdx(tmp, &minVal, &maxVal);
+		////////////cout << "m_mPhaseMap rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
+		////////////tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
 
-		tmp = m_mPhaseMap[1].clone();
-		//tmp.convertTo(tmp, CV_8UC1, 255 / 1024.0, 0);
-
-		minMaxIdx(tmp, &minVal, &maxVal);
-		cout << "m_mPhaseMap rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
-		tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
-
-		temp.push_back(tmp);
-		imagenames.push_back("m_mMap1Phase_Masked");
+		////////////temp.push_back(tmp);
+		////////////imagenames.push_back("m_mMap1Phase_Masked");
 
 	}
 	if (m_Info->m_bHorizontal&&m_Info->m_bVertical)
@@ -178,68 +175,47 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 				m_mMask[0].at<ushort>(x, y) = 0;
 			m_mPhaseError[0].at<float>(x, y) = std::min(m_mPhaseError[0].at<float>(x, y), m_mPhaseError[1].at<float>(x, y));
 		}
-		//////for (int y = 0; y < m_mMask[1].cols; y++)
-		//////	for (int x = 0; x < m_mMask[1].rows; x++)
-		//////	{
-		//////		if (!m_mMask[0].at<ushort>(x, y))
-		//////		{
-		//////			m_mGray[0].at<ushort>(x, y) = 0;
-		//////			m_mGray[1].at<ushort>(x, y) = 0;
-		//////		}
-		//////		if (!m_mPhaseError[0].at<ushort>(x, y))
-		//////		{
-		//////			m_mPhaseMap[0].at<ushort>(x, y) = 0;
-		//////			m_mPhaseMap[1].at<ushort>(x, y) = 0;
-		//////		}
-		//////	}
+
 		tmp = m_mMask[0].clone();
 		temp.push_back(tmp);
 		imagenames.push_back("m_mMaskGray_Final");
-		tmp = m_mPhaseError[0].clone();
-		temp.push_back(tmp);
-		imagenames.push_back("m_mMaskPhase_Final");
 
 		m_mGray[0] = MaskMat(m_mGray[0], m_mMask[0], true);
 		m_mGray[1] = MaskMat(m_mGray[1], m_mMask[0], true);
-		m_mPhaseMap[0] = MaskMat(m_mPhaseMap[0], m_mPhaseError[0], true);
-		m_mPhaseMap[1] = MaskMat(m_mPhaseMap[1], m_mPhaseError[0], true);
 
 		tmp = m_mGray[0].clone();
-		tmp.convertTo(tmp, CV_8UC1, 255 / 1024.0, 0);
+		tmp.convertTo(tmp, CV_8UC1, 255 / (m_Info->m_nWidth*1.0f), 0);
 		temp.push_back(tmp);
 		imagenames.push_back("m_mMap0Gray_Final");
 
 		tmp = m_mGray[1].clone();
 		cout << "m_mGray rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
-		tmp.convertTo(tmp, CV_8UC1, 255 / 1024.0, 0);
+		tmp.convertTo(tmp, CV_8UC1, 255 / (m_Info->m_nWidth*1.0f), 0);
 		temp.push_back(tmp);
 		imagenames.push_back("m_mMap1Gray_Final");
 		
-		tmp = m_mPhaseMap[0].clone();
-		minMaxIdx(tmp, &minVal, &maxVal);
-		cout << "m_mPhaseMap rows=" << tmp.rows << ", cols=" << tmp.cols<< ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
-		tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
-		imagenames.push_back("m_mMap0Phase_Final");
+		//////////tmp = m_mPhaseError[0].clone();
+		//////////temp.push_back(tmp);
+		//////////imagenames.push_back("m_mMaskPhase_Final");
+		////////m_mPhaseMap[0] = MaskMat(m_mPhaseMap[0], m_mPhaseError[0], true);
+		////////m_mPhaseMap[1] = MaskMat(m_mPhaseMap[1], m_mPhaseError[0], true);
+		////////////tmp = m_mPhaseMap[0].clone();
+		////////////minMaxIdx(tmp, &minVal, &maxVal);
+		////////////cout << "m_mPhaseMap rows=" << tmp.rows << ", cols=" << tmp.cols<< ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
+		////////////tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
+		////////////imagenames.push_back("m_mMap0Phase_Final");
 
-		tmp = m_mPhaseMap[1].clone();
-		minMaxIdx(tmp, &minVal, &maxVal);
-		cout << "m_mPhaseMap rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
-		tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
-		imagenames.push_back("m_mMap1Phase_Final");
+		////////////tmp = m_mPhaseMap[1].clone();
+		////////////minMaxIdx(tmp, &minVal, &maxVal);
+		////////////cout << "m_mPhaseMap rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
+		////////////tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
+		////////////imagenames.push_back("m_mMap1Phase_Final");
 
 		//show difference between 
-		//Mat diff0 = m_mGray[0].clone();
-		//Mat diff1 = m_mGray[0].clone();
-		////for (int x = 0; x < m_mGray[0].rows; x++)
-		////{
-		////	for (int y = 0; y < m_mGray[0].cols; y++)
-		////	{
-		////		diff0.at<float>(x, y) = abs(m_mPhaseMap[0].at<float>(x, y) - m_mGray[0].at<float>(x, y));
-		////		diff1.at<float>(x, y) = abs(m_mPhaseMap[1].at<float>(x, y) - m_mGray[1].at<float>(x, y));
-		////	}
-		////}
-		Mat diff0 = m_mPhaseMap[0] - m_mGray[0];
-		Mat diff1 = m_mPhaseMap[1] - m_mGray[1];
+		//std::cout << m_mPhaseMap[0]<<endl;
+		//std::cout << m_mGray[0] << endl;
+		////Mat diff0 = m_mPhaseMap[0] - m_mGray[0];
+		//////Mat diff1 = m_mPhaseMap[1] - m_mGray[1];
 
 		//double minVal, maxVal, minValComp, maxValComp;
 		//minMaxIdx(diff0, &minVal, &maxVal);
@@ -256,8 +232,9 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 
 		//cout << m_mGray[0] << endl;
 
-		m_mGray[0] = m_mPhaseMap[0].clone();
-		m_mGray[1] = m_mPhaseMap[1].clone();
+		//////////////finally
+		////////////m_mGray[0] = m_mPhaseMap[0].clone();
+		////////////m_mGray[1] = m_mPhaseMap[1].clone();
 
 		//cout << m_mGray[0] << endl;
 	}		
@@ -457,16 +434,28 @@ void CDecoder::UnwrapPhase(Mat& phase, int period, Mat& reference, Mat& result, 
 	}
 }
 
-void CDecoder::CreateReliableMap(int dir)
+void CDecoder::CreateReliableMap(int dir, bool fringe)
 {
 	float maxError = 2.0 / m_Info->m_nNumFringes;
 	Mat& reliable = m_mPhaseError[dir];
 	for (int y = 0; y < reliable.cols;y++)
 		for (int x = 0; x < reliable.rows; x++)
-			if (reliable.at<float>(x, y) < maxError  && m_mGrayError[dir].at<uchar>(x, y) > m_fDivisor[dir]*2)
-				reliable.at<float>(x, y) = 255;
+		{
+			if (fringe)
+			{
+				if (reliable.at<float>(x, y) < maxError  && m_mGrayError[dir].at<uchar>(x, y) > m_fDivisor[dir] * 2)
+					reliable.at<float>(x, y) = 255;
+				else
+					reliable.at<float>(x, y) = 0;
+			}
 			else
-				reliable.at<float>(x, y) = 0;
+			{
+				if (m_mGrayError[dir].at<uchar>(x, y) > m_fDivisor[dir] * 2)
+					reliable.at<float>(x, y) = 255;
+				else
+					reliable.at<float>(x, y) = 0;
+			}
+		}
 }
 
 CDecoder::~CDecoder()
@@ -529,7 +518,7 @@ bool CDecoder::Calibrate(Mat& CameraMatrix,Mat& DistMatrix)
     good_points1 = m_vCorrespondencePoints[1];
     m_vCorrespondencePoints[0].clear();
     m_vCorrespondencePoints[1].clear();
-    Mat img_orig_matches = Mat(768,1024,CV_8UC1);
+    Mat img_orig_matches = Mat(m_Info->m_nHeight, m_Info->m_nWidth,CV_8UC1); //Mat(768,1024,CV_8UC1);
     for(int i=0;i<status.size();i++)
     {
         if(status[i])
@@ -621,9 +610,9 @@ bool CDecoder::Generate3Dpoints(Mat& k,Mat& distCoef)
 
     for(double a = 1000;a<1001.0;a++)
     {
-        double data[] = {a,0,0.5*1024,
-                         0, a,0.5*768,
-                         0, 0, 1};
+		double data[] = { a, 0, 0.5* m_Info->m_nWidth,
+			0, a, 0.5*m_Info->m_nHeight,
+			0, 0, 1 };
         k_proj = Mat(3,3,CV_64FC1,data);
         m_mEssentialMatrix = k_cam.t() * m_mFundamentalMatrix * k_proj;
         if(fabsf(determinant(m_mEssentialMatrix)) < 1e-07 && CMatrixUtil::DecomposeEtoRandT(m_mEssentialMatrix,R1,R2,t1,t2)) {

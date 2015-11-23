@@ -30,7 +30,15 @@ CCapturador::CCapturador(COptions* opt, string ruta) :  m_Options(opt)
 		m_Options->m_nNumPatterns *= 2;
 	if (m_Options->m_bComplementary)
 		m_Options->m_nNumPatterns *= 2;
-	m_nPatterns = m_Options->m_nNumPatterns + m_Options->m_nNumFringes * 2;
+	if (m_Options->m_bPhase)
+	{
+		m_nPatterns = m_Options->m_nNumPatterns + m_Options->m_nNumFringes * 2;
+	}
+	else
+	{
+		m_nPatterns = m_Options->m_nNumPatterns;
+	}
+	std::cout << "Yang:CCapturador-->Load pattern m_nPatterns=" << m_nPatterns << std::endl;
 	for (int i = 0; i < m_nPatterns; i++)
 	{
 		std::ostringstream oss;
@@ -99,27 +107,31 @@ bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool use
 	auto B = GetTickCount();
 	for (int i = 0;;)
 	{
+		cvWaitKey(time);
+
 		imshow("Patrones", m_vPatterns[i]);
 		
 		CameraFrame camframe;
 		//m_VideoCapture >> frame;
 		camframe = camera->getFrame();
-		Mat frame(camframe.height, camframe.width,CV_8U, camframe.memory);
-		frame = frame.clone();
-
-		//---debug--------------------------------------------------------
-		// Create 8 bit OpenCV matrix 
+		
+		//Yang: How to download GigE image from device to host memory? So my solution: save frame to disk "frameSeq_Temp.bmp", then read from disk;
+		Mat frame(camframe.height, camframe.width,CV_8UC1, camframe.memory);
+		//frame = frame.clone();
+		//---debug--------------------------------------------------------		
+		frame = cv::imread("frameSeq_Temp.bmp", CV_LOAD_IMAGE_GRAYSCALE);
+		frame.clone();	
 		std::stringstream oss;
 		oss << "frameSeq_0" << i << ".bmp";
 		string str = oss.str();
-		cv::imwrite(str, frame);
+		cv::imwrite(str, frame);		
 		//debug end-----------------------------------------------------
 
 
-		B = GetTickCount();
-		int C = B - A;
-		if (C>time || waitKey(30) >= 0)
-		{
+		//B = GetTickCount();
+		//int C = B - A;
+		//if (C>time || waitKey(30) >= 0)
+		//{
 			if (!frame.empty())
 			if (useComp)
 			{
@@ -148,10 +160,10 @@ bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool use
 			}
 			else
 				printf("Error: no caputure info.\n");
-			A = GetTickCount();
-		};
+		//	A = GetTickCount();
+		//};
 	}
-	cout << "Pattern Captured." << endl;
+	std::cout << "Pattern Captured." << std::endl;
 	cvDestroyWindow("Patrones");
 	//cvDestroyWindow("Camera");
 	

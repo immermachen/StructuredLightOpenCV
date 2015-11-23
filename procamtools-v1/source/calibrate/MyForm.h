@@ -634,9 +634,12 @@ namespace calibrate {
 #pragma endregion
 	private: System::Void MyForm_Load(System::Object^  sender, System::EventArgs^  e)
 	{
-				 m_options = new COptions(1920, 1080, 11, 4, true, true, true, true, true);
+				 //m_options = new COptions(1920, 1080, 11, 4, true, true, true, true, true);
+				 m_options = new COptions(1024, 768, 10, 4, true, true, true, false, true);
+				 
+				 //string ruta = "../resources/Patterns/1920-1080/pattern-0";
+				 string ruta = "../resources/Patterns/pattern-0";
 
-				 string ruta = "../resources/Patterns/1920-1080/pattern-0";
 				 m_Cap = new CCapturador(m_options, ruta);
 				 m_renderer = new Renderer();
 				 m_bShowWebcam = false;
@@ -658,8 +661,9 @@ namespace calibrate {
 		if (m_Cap->m_vCaptures.size() > 0)
 		{
 			Mat b;
-			cvtColor(m_Cap->m_vCaptures[0], b, CV_GRAY2RGB);
+			cvtColor(m_Cap->m_vCaptures[0], b, CV_GRAY2RGB);			
 			DrawCvImage(&(IplImage)b, pictureCapture);
+
 			m_decoder->m_Info->m_bComplementary = true;
 			int thress = 25 * comboBoxThress->SelectedIndex;
 			bool captura = m_decoder->Decode(thress, m_Cap->m_vCaptures);
@@ -670,10 +674,10 @@ namespace calibrate {
 				cvtColor(b, b, CV_GRAY2RGB);
 				DrawCvImage(&(IplImage)b, pictureMask);
 				Mat temp1 = Mat(m_decoder->m_mGray[0].rows, m_decoder->m_mGray[0].cols, CV_8UC1);
-				m_decoder->m_mGray[0].convertTo(temp1, CV_8UC1, 255 / 1024.0, 0);
+				m_decoder->m_mGray[0].convertTo(temp1, CV_8UC1, 255 / m_options->m_nWidth, 0);
 				cvtColor(temp1, b, CV_GRAY2RGB);
 				DrawCvImage(&(IplImage)b, pictureCorrX);
-				m_decoder->m_mGray[1].convertTo(temp1, CV_8UC1, 255 / 1024.0, 0);
+				m_decoder->m_mGray[1].convertTo(temp1, CV_8UC1, 255 / m_options->m_nWidth, 0);
 				cvtColor(temp1, b, CV_GRAY2RGB);
 				DrawCvImage(&(IplImage)b, pictureCorrY);
 			}
@@ -942,7 +946,7 @@ namespace calibrate {
 				 Graphics^g = Graphics::FromImage(pbx->Image);
 
 				 Bitmap^ bmp = gcnew Bitmap(CvImage->width, CvImage->height, CvImage->widthStep,
-					 System::Drawing::Imaging::PixelFormat::Format24bppRgb, IntPtr(CvImage->imageData));
+					 System::Drawing::Imaging::PixelFormat::Format24bppRgb, IntPtr(CvImage->imageData)); //Format24bppRgb
 
 				 g->DrawImage(bmp, 0, 0, CvImage->width, CvImage->height);
 				 pbx->Refresh();
@@ -999,8 +1003,8 @@ namespace calibrate {
 
 					 float fx = (*m_proj_int)(0, 0);
 					 float fy = (*m_cam_int)(1, 1);
-					 m_fvoX = 2 * atan(1024.0f / (2 * fx)) * 180.0 / CV_PI;
-					 m_fvoY = 2 * atan(768.0f / (2 * fy)) * 180.0 / CV_PI;
+					 m_fvoX = 2 * atan((m_options->m_nWidth*1.0f) / (2 * fx)) * 180.0 / CV_PI;
+					 m_fvoY = 2 * atan((m_options->m_nHeight*1.0f) / (2 * fy)) * 180.0 / CV_PI;
 					 System::String^ filename = saveFileDialog->FileName;
 					 System::IO::StreamWriter^ file = gcnew System::IO::StreamWriter(filename);
 					 file->WriteLine("MatJPV");
@@ -1222,8 +1226,8 @@ namespace calibrate {
 
 					 float fx = cam_int(0,0);
 					 float fy = cam_int(1,1);
-					 m_fvoX = 2 * atan(1024.0f / (2 * fx)) * 180.0 / CV_PI;
-					 m_fvoY = 2 * atan(768.0f / (2 * fy)) * 180.0 / CV_PI;
+					 m_fvoX = 2 * atan((m_options->m_nWidth*1.0f) / (2 * fx)) * 180.0 / CV_PI;
+					 m_fvoY = 2 * atan((m_options->m_nHeight*1.0f) / (2 * fy)) * 180.0 / CV_PI;
 
 				 }
 	}

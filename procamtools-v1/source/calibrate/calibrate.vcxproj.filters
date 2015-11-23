@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\FundamentalMatrix.cpp" />
+    <ClCompile Include="Bitmap.cpp" />
+    <ClCompile Include="CameraVimba.cpp" />
+    <ClCompile Include="Capturador.cpp" />
+    <ClCompile Include="Decoder.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MatrixUtil.cpp" />
+    <ClCompile Include="MyForm.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="simpleRenderGL.cpp" />
+    <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="VirtualCamera.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Bitmap.h" />
+    <ClInclude Include="calibrate.h" />
+    <ClInclude Include="..\..\common\CameraCalibration.h" />
+    <ClInclude Include="..\FundamentalMatrix.h" />
+    <ClInclude Include="..\..\common\IniFile.h" />
+    <ClInclude Include="..\..\common\LeastSquare.h" />
+    <ClInclude Include="..\..\levmar\levmar_util.h" />
+    <ClInclude Include="..\..\common\MathBase.h" />
+    <ClInclude Include="..\..\common\MathBaseLapack.h" />
+    <ClInclude Include="..\Options.h" />
+    <ClInclude Include="..\ransac.h" />
+    <ClInclude Include="CameraVimba.h" />
+    <ClInclude Include="Capturador.h" />
+    <ClInclude Include="Common\ErrorCodeToMessage.h" />
+    <ClInclude Include="Common\StreamSystemInfo.h" />
+    <ClInclude Include="Decoder.h" />
+    <ClInclude Include="MatrixUtil.h" />
+    <ClInclude Include="MyForm.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="simpleRenderGL.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="..\..\common\Stereo.h" />
+    <ClInclude Include="VirtualCamera.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="calibrate.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MyForm.resx" />
+  </ItemGroup>
+</Project>

@@ -61,7 +61,7 @@ public:
 	static Mat MaskMat(Mat& img, Mat& mask,bool);
 	Mat DecodePhaseImages(vector<Mat>&, int);
 	void UnwrapPhase(Mat& phase, int period, Mat& reference, Mat& result, Mat& unwrap_error);
-	void CreateReliableMap(int dir);
+	void CreateReliableMap(int dir, bool fringe);
 	void BuildCorrespondence(Mat* grays);
     bool Calibrate(Mat& CameraMatrix, Mat& DistMatrix);
 	bool CalibrateRadial();
