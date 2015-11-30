@@ -29,8 +29,8 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 			std::cout << "m_vCaptures.size=" << m_vCaptures.size() << ", m_Info->m_nNumPatterns = " << m_Info->m_nNumPatterns << ", m_Info->m_nBasePatterns="
 				<< m_Info->m_nBasePatterns << ", m_Info->m_nNumFringes=" << m_Info->m_nNumFringes << std::endl;
 
-            vector<Mat>::iterator begin = m_vCaptures.begin() + m_Info->m_nNumPatterns / 2;
-            vector<Mat>::iterator end = m_vCaptures.begin() + m_Info->m_nNumPatterns / 2 + m_Info->m_nNumFringes;
+			vector<Mat>::iterator begin = m_vCaptures.begin() + m_Info->m_nBasePatterns*2;
+			vector<Mat>::iterator end = m_vCaptures.begin() + m_Info->m_nBasePatterns * 2 + m_Info->m_nNumFringes;
 
 			vector<Mat> phaseImgs(begin, end);
 			m_mPhaseMap[0] = DecodePhaseImages(phaseImgs, 0);
@@ -75,8 +75,8 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 			std::cout << "m_Info->m_nNumPatterns = " << m_Info->m_nNumPatterns << ", m_Info->m_nBasePatterns="
 				<< m_Info->m_nBasePatterns << ", m_Info->m_nNumFringes=" << m_Info->m_nNumFringes << std::endl;
 
-            vector<Mat>::iterator begin = m_vCaptures.begin() + m_Info->m_nNumPatterns;
-            vector<Mat>::iterator end = m_vCaptures.begin() + m_Info->m_nNumPatterns + m_Info->m_nNumFringes;
+			vector<Mat>::iterator begin = m_vCaptures.begin() + m_Info->m_nNumPatterns - m_Info->m_nNumFringes;
+            vector<Mat>::iterator end = m_vCaptures.begin() + m_Info->m_nNumPatterns;
 
 			vector<Mat> phaseImgs(begin, end);
 			m_mPhaseMap[1] = DecodePhaseImages(phaseImgs, 1);
@@ -132,6 +132,9 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 			}
 	}
 		
+	m_mPhaseMap[0] = m_mGray[0];
+	m_mPhaseMap[1] = m_mGray[1];
+
 	//yang:	
 	imwrite("m_mGray0.bmp", m_mGray[0]);
 	imwrite("m_mGray1.bmp", m_mGray[1]);
@@ -156,8 +159,16 @@ void CDecoder::DecodeGray(int dir,float int_threshold)
 		if (m_Info->m_bComplementary)
 		{
 			double maxVal, maxValComp, minVal, minValComp;
-			Mat m = m_vCaptures[dir*(m_Info->m_nBasePatterns * 2) + 2 * i].clone();
-			Mat m1 = m_vCaptures[dir*(m_Info->m_nBasePatterns * 2) + 2 * i + 1].clone();
+
+			int numFringes = 0;
+			if (m_Info->m_bPhase && dir == 1)
+			{
+				numFringes = m_Info->m_nNumFringes;
+			}
+
+			Mat m = m_vCaptures[dir*(m_Info->m_nBasePatterns * 2) + 2 * i + numFringes].clone();
+			Mat m1 = m_vCaptures[dir*(m_Info->m_nBasePatterns * 2) + 2 * i + 1 + numFringes].clone();
+
 			minMaxIdx(m, &minVal, &maxVal);
 			minMaxIdx(m1, &minValComp, &maxValComp);
 			float BrightesPixel = std::max(maxVal, maxValComp);
@@ -317,19 +328,29 @@ void CDecoder::UnwrapPhase(Mat& phase, int period, Mat& reference, Mat& result, 
 void CDecoder::CreateReliableMap(int dir)
 {
 	float maxError = 2.0 / m_Info->m_nNumFringes;
-	
+
 	//yang
 	//Mat& reliable = m_mPhaseError[dir];
-	m_mReliableMask[dir] = m_mPhaseError[dir].clone();	
+	m_mReliableMask[dir] = m_mPhaseError[dir].clone();
 
 	for (int y = 0; y < m_mReliableMask[dir].cols; y++)
 		for (int x = 0; x < m_mReliableMask[dir].rows; x++)
-			//Yang:
-			//if (/*reliable.at<float>(x, y) < maxError  && */ m_mGrayError[dir].at<uchar>(x, y) > m_fDivisor[dir]*2)
-			if (m_mReliableMask[dir].at<float>(x, y) < maxError  && m_mGrayError[dir].at<uchar>(x, y) > m_fDivisor[dir] * 2)//Yang:???
-				m_mReliableMask[dir].at<float>(x, y) = 255;
+		{
+			if (m_Info->m_bPhase)
+			{
+				if (m_mReliableMask[dir].at<float>(x, y) < maxError  && m_mGrayError[dir].at<uchar>(x, y) > m_fDivisor[dir] * 2)//Yang:???
+					m_mReliableMask[dir].at<float>(x, y) = 255;
+				else
+					m_mReliableMask[dir].at<float>(x, y) = 0;
+			}
 			else
-				m_mReliableMask[dir].at<float>(x, y) = 0;
+			{
+				if (/*reliable.at<float>(x, y) < maxError  && */ m_mGrayError[dir].at<uchar>(x, y) > m_fDivisor[dir]*2)				
+					m_mReliableMask[dir].at<float>(x, y) = 255;
+				else
+					m_mReliableMask[dir].at<float>(x, y) = 0;
+			}
+		}
 }
 
 CDecoder::~CDecoder()

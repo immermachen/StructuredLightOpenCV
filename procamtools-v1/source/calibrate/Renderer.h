@@ -207,7 +207,7 @@ public:
 		// update transform
 		////Yang: error: unresolved token (0A000464) "extern "C" void __cdecl aiTransposeMatrix4
 		//aiTransposeMatrix4(&m); 
-		std::cout << "Yang: error: Render.h-->recursive_render-->unresolved token (0A000464) extern void __cdecl aiTransposeMatrix4" << std::endl;
+		std::cout << "TODO:Yang: error: Render.h-->recursive_render-->unresolved token (0A000464) extern void __cdecl aiTransposeMatrix4" << std::endl;
 
 		glPushMatrix();
 		glMultMatrixf((float*)&m);

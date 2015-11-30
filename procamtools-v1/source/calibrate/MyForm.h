@@ -634,8 +634,8 @@ namespace calibrate {
 #pragma endregion
 	private: System::Void MyForm_Load(System::Object^  sender, System::EventArgs^  e)
 	{
-				 m_options = new COptions(1024, 768, 10, 4, true, true, true, true, true);
-				 string ruta = "../resources/Patterns/pattern-0";
+				 m_options = new COptions(640, 360, 10, 0, true, true, true, false, true);
+				 string ruta = "../resources/Patterns/640-360/pattern-0";
 				 m_Cap = new CCapturador(m_options, ruta);
 				 m_renderer = new Renderer();
 				 m_bShowWebcam = false;
@@ -685,16 +685,19 @@ namespace calibrate {
 							 if (captura)
 							 {
 								 Mat b;
-								 m_decoder->m_mMask[0].convertTo(b, CV_8UC1);
+								 //yang : use m_mPhaseMap instead of m_mGray
+								 //m_decoder->m_mMask[0].convertTo(b, CV_8UC1);
+								 m_decoder->m_mReliableMask[0].convertTo(b, CV_8UC1);
 								 cvtColor(b, b, CV_GRAY2RGB);
 								 DrawCvImage(&(IplImage)b, pictureMask);
-								 Mat temp1 = Mat(m_decoder->m_mGray[0].rows, m_decoder->m_mGray[0].cols, CV_8UC1);
-								 m_decoder->m_mGray[0].convertTo(temp1, CV_8UC1, 255 / 1024.0, 0);
+								 Mat temp1 = Mat(m_decoder->m_mPhaseMap[0].rows, m_decoder->m_mPhaseMap[0].cols, CV_8UC1);
+								 m_decoder->m_mPhaseMap[0].convertTo(temp1, CV_8UC1, 255 / 640.0, 0);
 								 cvtColor(temp1, b, CV_GRAY2RGB);
 								 DrawCvImage(&(IplImage)b, pictureCorrX);
-								 m_decoder->m_mGray[1].convertTo(temp1, CV_8UC1, 255 / 1024.0, 0);
+								 m_decoder->m_mPhaseMap[1].convertTo(temp1, CV_8UC1, 255 / 640.0, 0);
 								 cvtColor(temp1, b, CV_GRAY2RGB);
 								 DrawCvImage(&(IplImage)b, pictureCorrY);
+
 							 }
 
 						 }
@@ -708,7 +711,7 @@ namespace calibrate {
 				 {
 				 Renderer a;
 				 //a.render("mesh1.ply");
-				 COptions* options = new COptions(1024, 768, 10, 4, true, true, true, false,true);
+				 COptions* options = new COptions(640, 360, 10, 4, true, true, true, false,true);
 				 options_t opt;
 				 opt.debug = true;
 				 string ruta = "../resources/Patterns/pattern-0";
@@ -753,7 +756,7 @@ namespace calibrate {
 				 m_phase_map[k].cell(i, j) = a.at<ushort>(j, i);
 				 }
 				 //Mat temp1 = Mat(decoder->m_mGray[1].rows, decoder->m_mGray[1].cols, CV_8UC1);
-				 //decoder->m_mGray[1].convertTo(temp1, CV_8UC1, 255 / 1024.0, 0);
+				 //decoder->m_mGray[1].convertTo(temp1, CV_8UC1, 255 / 640.0, 0);
 				 //imshow("mascara1", temp1);
 				 //imshow("mascara2", mask);
 				 cvWaitKey();
@@ -850,18 +853,28 @@ namespace calibrate {
 					 if (captura)
 					 {
 						 Mat b,c;
-						 m_decoder->m_mMask[0].convertTo(c, CV_8UC1);
+						 //yang
+						 //m_decoder->m_mMask[0].convertTo(c, CV_8UC1);
+						 m_decoder->m_mReliableMask[0].convertTo(c, CV_8UC1);
 						 cvtColor(c, b, CV_GRAY2RGB);
 						 DrawCvImage(&(IplImage)b, pictureMask);
 
+
+						 ////////////Mat temp1 = Mat(m_decoder->m_mPhaseMap[0].rows, m_decoder->m_mPhaseMap[0].cols, CV_8UC1);
+						 ////////////m_decoder->m_mPhaseMap[0].convertTo(temp1, CV_8UC1, 255 / 640.0, 0);
+						 ////////////cvtColor(temp1, b, CV_GRAY2RGB);
+						 ////////////DrawCvImage(&(IplImage)b, pictureCorrX);
+						 ////////////m_decoder->m_mPhaseMap[1].convertTo(temp1, CV_8UC1, 255 / 640.0, 0);
+						 ////////////cvtColor(temp1, b, CV_GRAY2RGB);
+						 ////////////DrawCvImage(&(IplImage)b, pictureCorrY);
+
 						 Mat temp1 = Mat(m_decoder->m_mGray[0].rows, m_decoder->m_mGray[0].cols, CV_8UC1);
-						 m_decoder->m_mGray[0].convertTo(temp1, CV_8UC1, 255 / 1024.0, 0);
+						 m_decoder->m_mGray[0].convertTo(temp1, CV_8UC1, 255 / 640.0, 0);
 						 cvtColor(temp1, b, CV_GRAY2RGB);
 						 DrawCvImage(&(IplImage)b, pictureCorrX);
-						 m_decoder->m_mGray[1].convertTo(temp1, CV_8UC1, 255 / 1024.0, 0);
+						 m_decoder->m_mGray[1].convertTo(temp1, CV_8UC1, 255 / 640.0, 0);
 						 cvtColor(temp1, b, CV_GRAY2RGB);
 						 DrawCvImage(&(IplImage)b, pictureCorrY);
-
 					 }
 				 }
 				 captureToolStripMenuItem->Enabled = true;
@@ -972,30 +985,58 @@ namespace calibrate {
 
 	private: System::Void calibrateCameraProjectorToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e)
 	{
-				 if (m_decoder->m_mGray[0].empty())
+		//yang: use gray code 
+				///* if (m_decoder->m_mGray[0].empty())
+				// {
+				//	 MessageBox::Show("No hay información para calibrar. Carge capturas para continuar.",
+				//		 "Error", MessageBoxButtons::OK,
+				//		 MessageBoxIcon::Error);
+				//	 return;
+				// }
+
+				// Mat b = m_decoder->m_mMask[1].clone();
+				// slib::Field<2, float> m_mask;
+				// m_mask.Initialize(b.cols, m_decoder->m_mMask[1].rows);
+				// for (int i = 0; i < b.cols; i++)
+				// for (int j = 0; j < b.rows; j++)
+				//	 m_mask.cell(i, j) = b.at<ushort>(j, i);
+
+
+				// slib::Field<2, float> m_phase_map[2];
+				// for (int k = 0; k < 2; k++)
+				// {
+				//	 Mat a = m_decoder->m_mGray[k].clone();
+				//	 m_phase_map[k].Initialize(a.cols, a.rows);
+				//	 for (int i = 0; i < a.cols; i++)
+				//	 for (int j = 0; j < a.rows; j++)
+				//		 m_phase_map[k].cell(i, j) = a.at<ushort>(j, i);
+				// }*/
+
+				//yang: use combination of gray code and phase shift
+				 if (m_decoder->m_mPhaseMap[0].empty())
 				 {
-					 MessageBox::Show("No hay información para calibrar. Carge capturas para continuar.",
+					 MessageBox::Show("No Information to calibration. Load captures to continue.",
 						 "Error", MessageBoxButtons::OK,
 						 MessageBoxIcon::Error);
 					 return;
 				 }
 
-				 Mat b = m_decoder->m_mMask[1].clone();
+				 Mat b = m_decoder->m_mReliableMask[0].clone();
 				 slib::Field<2, float> m_mask;
-				 m_mask.Initialize(b.cols, m_decoder->m_mMask[1].rows);
+				 m_mask.Initialize(b.cols, m_decoder->m_mReliableMask[1].rows);
 				 for (int i = 0; i < b.cols; i++)
-				 for (int j = 0; j < b.rows; j++)
-					 m_mask.cell(i, j) = b.at<ushort>(j, i);
+					 for (int j = 0; j < b.rows; j++)
+						 m_mask.cell(i, j) = b.at<ushort>(j, i);
 
 
 				 slib::Field<2, float> m_phase_map[2];
 				 for (int k = 0; k < 2; k++)
 				 {
-					 Mat a = m_decoder->m_mGray[k].clone();
+					 Mat a = m_decoder->m_mPhaseMap[k].clone();
 					 m_phase_map[k].Initialize(a.cols, a.rows);
 					 for (int i = 0; i < a.cols; i++)
-					 for (int j = 0; j < a.rows; j++)
-						 m_phase_map[k].cell(i, j) = a.at<ushort>(j, i);
+						 for (int j = 0; j < a.rows; j++)
+							 m_phase_map[k].cell(i, j) = a.at<ushort>(j, i);
 				 }
 				 m_calib->Calibrate(m_phase_map[0], m_phase_map[1], m_mask);
 				 *m_cam_int = m_calib->m_cam_int;
@@ -1019,8 +1060,8 @@ namespace calibrate {
 
 					 float fx = (*m_proj_int)(0, 0);
 					 float fy = (*m_cam_int)(1, 1);
-					 m_fvoX = 2 * atan(1024.0f / (2 * fx)) * 180.0 / CV_PI;
-					 m_fvoY = 2 * atan(768.0f / (2 * fy)) * 180.0 / CV_PI;
+					 m_fvoX = 2 * atan(640.0f / (2 * fx)) * 180.0 / CV_PI;
+					 m_fvoY = 2 * atan(360.0f / (2 * fy)) * 180.0 / CV_PI;
 					 System::String^ filename = saveFileDialog->FileName;
 					 System::IO::StreamWriter^ file = gcnew System::IO::StreamWriter(filename);
 					 file->WriteLine("MatJPV");
@@ -1242,8 +1283,8 @@ namespace calibrate {
 
 					 float fx = cam_int(0,0);
 					 float fy = cam_int(1,1);
-					 m_fvoX = 2 * atan(1024.0f / (2 * fx)) * 180.0 / CV_PI;
-					 m_fvoY = 2 * atan(768.0f / (2 * fy)) * 180.0 / CV_PI;
+					 m_fvoX = 2 * atan(640.0f / (2 * fx)) * 180.0 / CV_PI;
+					 m_fvoY = 2 * atan(360.0f / (2 * fy)) * 180.0 / CV_PI;
 
 				 }
 	}
@@ -1358,10 +1399,10 @@ namespace calibrate {
 					 DrawCvImage(&(IplImage)b, pictureMask);
 
 					 Mat temp1 = Mat(m_decoder->m_mGray[0].rows, m_decoder->m_mGray[0].cols, CV_8UC1);
-					 m_decoder->m_mGray[0].convertTo(temp1, CV_8UC1, 255 / 1024.0, 0);
+					 m_decoder->m_mGray[0].convertTo(temp1, CV_8UC1, 255 / 640.0, 0);
 					 cvtColor(temp1, b, CV_GRAY2RGB);
 					 DrawCvImage(&(IplImage)b, pictureCorrX);
-					 m_decoder->m_mGray[1].convertTo(temp1, CV_8UC1, 255 / 1024.0, 0);
+					 m_decoder->m_mGray[1].convertTo(temp1, CV_8UC1, 255 / 640.0, 0);
 					 cvtColor(temp1, b, CV_GRAY2RGB);
 					 DrawCvImage(&(IplImage)b, pictureCorrY);
 

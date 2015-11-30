@@ -28,7 +28,14 @@ int main(int argc, char *argv[])
 	{
 		//if (argc != 2)
 		//	print_usage(argv[0]);
+
+		//Yang:: ---------------------only set here, then ok------------------------
 		options_t opciones;
+		opciones.num_fringes = 0;
+		opciones.projector_width = 640;
+		opciones.projector_height = 360;
+		opciones.projector_horizontal_center = 0.83; //yang: test this
+
 		CEncode encode(opciones);
 		int nimages = encode.GetNumImages();
 

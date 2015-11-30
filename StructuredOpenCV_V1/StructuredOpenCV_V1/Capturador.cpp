@@ -234,6 +234,9 @@ bool CCapturador::LoadCapturesFromFilesUndisorted(string ruta,Mat& CameraMatrix,
 		Mat capture = imread(oss.str(), 1);
 		if (capture.empty())
 			return false;
+
+		std::cout << "CCapturador::LoadCapturesFromFilesUndisorted-->" << temp << std::endl;
+
 		Mat gray;
 		cv::cvtColor(capture, gray, CV_BGR2GRAY);
 		Mat view, rview, map1, map2;

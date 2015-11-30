@@ -42,8 +42,8 @@ class CDecoder
     vector<Point3f> m_vPointCloud;
 	Mat m_mGrayError[2];
 	Mat m_mPhaseError[2];
-	Mat m_mReliableMask[2];//Yang: Maks for combination of phase and gray code
-	Mat m_mPhaseMap[2];
+	
+	
 	Mat m_mFundamentalMatrix;
     Mat_<double> m_mEssentialMatrix;
 	float m_fDivisor[2];
@@ -53,6 +53,8 @@ class CDecoder
 public:
 	COptions* m_Info;
 	Mat m_mGray[2];
+	Mat m_mPhaseMap[2];//Yang, change from private to public 
+	Mat m_mReliableMask[2];//Yang: Maks for combination of phase and gray code
 	Mat m_mMask[2]; //Yang:Mask for graycode
 	CDecoder(COptions* Options);
 	bool Decode(float thres, vector<Mat>& vCaptures);

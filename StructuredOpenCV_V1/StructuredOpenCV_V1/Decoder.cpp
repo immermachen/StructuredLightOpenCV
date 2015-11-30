@@ -22,12 +22,17 @@ bool CDecoder::Decode()
 		m_mMask[0].convertTo(m_mMask[0], CV_16UC1);
 		if (m_Info->m_bPhase)
 		{
-            vector<Mat>::iterator begin = m_vCaptures.begin() + m_Info->m_nNumPatterns / 2;
-            vector<Mat>::iterator end = m_vCaptures.begin() + m_Info->m_nNumPatterns / 2 + m_Info->m_nNumFringes;
+			std::cout << "m_vCaptures.size=" << m_vCaptures.size() << ", m_Info->m_nNumPatterns = " << m_Info->m_nNumPatterns << ", m_Info->m_nBasePatterns="
+				<< m_Info->m_nBasePatterns << ", m_Info->m_nNumFringes=" << m_Info->m_nNumFringes << std::endl;
+
+			vector<Mat>::iterator begin = m_vCaptures.begin() + m_Info->m_nNumPatterns / 2 - m_Info->m_nNumFringes;
+            vector<Mat>::iterator end = m_vCaptures.begin() + m_Info->m_nNumPatterns / 2;
 
 			vector<Mat> phaseImgs(begin, end);
 			m_mPhaseMap[0] = DecodePhaseImages(phaseImgs, 0);
 			UnwrapPhase(m_mPhaseMap[0], m_Info->m_nFringeInterval*m_Info->m_nNumFringes, m_mGray[0], m_mPhaseMap[0], m_mPhaseError[0]);
+			//Yang debug
+			m_mGray[0] = m_mPhaseMap[0];
 		}
 		else
 			m_mPhaseError[0] = Mat(m_mGray[0].rows, m_mGray[0].cols, CV_32FC1);
@@ -51,12 +56,16 @@ bool CDecoder::Decode()
 		m_mMask[1].convertTo(m_mMask[1], CV_16UC1);
 		if (m_Info->m_bPhase)
 		{
-            vector<Mat>::iterator begin = m_vCaptures.begin() + m_Info->m_nBasePatterns + m_Info->m_nNumPatterns / 2;
-            vector<Mat>::iterator end = m_vCaptures.begin() + m_Info->m_nNumPatterns + m_Info->m_nNumFringes;
+			std::cout << "m_Info->m_nNumPatterns = " << m_Info->m_nNumPatterns << ", m_Info->m_nBasePatterns=" 
+				<< m_Info->m_nBasePatterns << ", m_Info->m_nNumFringes=" << m_Info->m_nNumFringes << std::endl;
+            vector<Mat>::iterator begin = m_vCaptures.begin() + m_Info->m_nNumPatterns - m_Info->m_nNumFringes;
+            vector<Mat>::iterator end = m_vCaptures.begin() + m_Info->m_nNumPatterns;
 
 			vector<Mat> phaseImgs(begin, end);
 			m_mPhaseMap[1] = DecodePhaseImages(phaseImgs, 1);
 			UnwrapPhase(m_mPhaseMap[1], m_Info->m_nFringeInterval*m_Info->m_nNumFringes, m_mGray[1], m_mPhaseMap[1], m_mPhaseError[1]);
+			//Yang debug
+			m_mGray[1] = m_mPhaseMap[1];
 		}
 		else
 			m_mPhaseError[1] = Mat(m_mGray[1].rows, m_mGray[1].cols, CV_32FC1);
@@ -94,7 +103,7 @@ void CDecoder::DecodeGray(int dir,float int_threshold)
 	for (int i = 0; i < nbits; i++)
 	{
 		double maxVal, maxValComp, minVal, minValComp ;
-		Mat m = m_vCaptures[dir*(m_Info->m_nBasePatterns*2+m_Info->m_nNumFringes) + 2 * i].clone();
+		Mat m = m_vCaptures[dir*(m_Info->m_nBasePatterns * 2 + m_Info->m_nNumFringes) + 2 * i].clone();
 		Mat m1 = m_vCaptures[dir*(m_Info->m_nBasePatterns * 2 + m_Info->m_nNumFringes) + 2 * i + 1].clone();
 		minMaxIdx(m, &minVal, &maxVal);
 		minMaxIdx(m1, &minValComp, &maxValComp);

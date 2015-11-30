@@ -27,10 +27,13 @@ CCapturador::CCapturador(COptions* opt, string ruta) :  m_Options(opt)
 {
 	m_nPatterns = m_Options->m_nNumPatterns;
 	if (m_Options->m_bVertical)
-		m_Options->m_nNumPatterns *= 2;
+		m_Options->m_nNumPatterns += m_Options->m_nNumPatterns-1;
 	if (m_Options->m_bComplementary)
 		m_Options->m_nNumPatterns *= 2;
+	if (m_Options->m_bPhase)
+		m_Options->m_nNumPatterns += m_Options->m_nNumFringes * 2;
 	m_nPatterns = m_Options->m_nNumPatterns;
+
 	for (int i = 0; i < m_nPatterns; i++)
 	{
 		std::ostringstream oss;
