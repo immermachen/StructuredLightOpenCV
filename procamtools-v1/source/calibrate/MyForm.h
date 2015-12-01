@@ -635,7 +635,7 @@ namespace calibrate {
 	private: System::Void MyForm_Load(System::Object^  sender, System::EventArgs^  e)
 	{
 				 m_options = new COptions(640, 360, 10, 0, true, true, true, false, true);
-				 string ruta = "../resources/Patterns/640-360/pattern-0";
+				 string ruta = "../resources/Patterns/pattern-0";
 				 m_Cap = new CCapturador(m_options, ruta);
 				 m_renderer = new Renderer();
 				 m_bShowWebcam = false;
