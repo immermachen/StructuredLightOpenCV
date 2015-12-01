@@ -681,8 +681,8 @@ namespace OpenGLForm
 //		glTexImage2D(GL_TEXTURE_2D,     // Type of texture
 //			0,                 // Pyramid level (for mip-mapping) - 0 is the top level
 //			GL_RGB,            // Internal colour format to convert to
-//			mat.cols,          // Image width  i.e. 640 for Kinect in standard mode
-//			mat.rows,          // Image height i.e. 480 for Kinect in standard mode
+//			mat.cols,          // Image width  i.e. WIDTH for Kinect in standard mode
+//			mat.rows,          // Image height i.e. HEIGHT for Kinect in standard mode
 //			0,                 // Border width in pixels (can either be 1 or 0)
 //			inputColourFormat, // Input image format (i.e. GL_RGB, GL_RGBA, GL_BGR etc.)
 //			GL_UNSIGNED_BYTE,  // Image data type

@@ -59,27 +59,10 @@ CCapturador::CCapturador(COptions* opt, string ruta) :  m_Options(opt)
 
 bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool useComp)
 {
-	m_vCaptures.clear();
-	
-	//if (!m_VideoCapture.isOpened())  // check if we succeeded
-	//	m_VideoCapture = VideoCapture(device);
-	//if (!m_VideoCapture.isOpened())
-	//	return false;
-	
+	m_vCaptures.clear();	
 	camera->startCapture();
-	//if (!camera->isCapturing)
-	//	return false;
-
-
-	//VideoCapture cap(0);
-	//if (!cap.isOpened())
-	//	return -1;
 	bool bMakeCapture = false;
 	int nPatterns = 0;
-	//namedWindow("Camera", 1);
-	//cvWaitKey(500);
-	//m_VideoCapture >> m_mTextura;
-	//imwrite("Textura.bmp", 0);
 	namedWindow("Patrones");
 
 	HWND win_handle = FindWindowA(0, "Patrones"); 
@@ -110,23 +93,13 @@ bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool use
 		cvWaitKey(time);
 
 		imshow("Patrones", m_vPatterns[i]);
-		
+		//cvWaitKey(200);//Yang
+
 		CameraFrame camframe;
 		//m_VideoCapture >> frame;
 		camframe = camera->getFrame();
-		
-		//Yang: How to download GigE image from device to host memory? So my solution: save frame to disk "frameSeq_Temp.bmp", then read from disk;
 		Mat frame(camframe.height, camframe.width,CV_8UC1, camframe.memory);
-		//frame = frame.clone();
-		//---debug--------------------------------------------------------		
-		frame = cv::imread("frameSeq_Temp.bmp", CV_LOAD_IMAGE_GRAYSCALE);
-		frame.clone();	
-		std::stringstream oss;
-		oss << "frameSeq_0" << i << ".bmp";
-		string str = oss.str();
-		cv::imwrite(str, frame);		
-		//debug end-----------------------------------------------------
-
+		frame = frame.clone();
 
 		//B = GetTickCount();
 		//int C = B - A;
@@ -136,13 +109,13 @@ bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool use
 			if (useComp)
 			{
 				i++;
-				Mat capture = frame.clone();
-				Mat gray = capture;
+				//Mat capture = frame.clone();
+				Mat gray = frame; // capture;
 				//cv::cvtColor(capture, gray, CV_BGR2GRAY);
 				m_vCaptures.push_back(gray);
 				if (++nPatterns >= m_nPatterns)
 				{
-					m_mTextura = capture.clone();
+					m_mTextura = frame.clone();
 					break;
 				}
 					
@@ -166,7 +139,7 @@ bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool use
 	std::cout << "Pattern Captured." << std::endl;
 	cvDestroyWindow("Patrones");
 	//cvDestroyWindow("Camera");
-	
+	SerializeCapturesDefault(m_vCaptures, "Vimba");
 	camera->stopCapture();
 	
 	return true;
@@ -294,7 +267,7 @@ string CCapturador::SerializeCapturesDefault(vector<Mat> imagenes, string str)
 		ruta = oss.str();
 		//if (b16)
 		//	cvSave(oss.str().c_str(),  imagenes[i].data);
-		imagenes[i].convertTo(imagenes[i], CV_8UC1);
+		//imagenes[i].convertTo(imagenes[i], CV_8UC1); // Yang
 		imwrite(oss.str(), imagenes[i]);
 		oss.clear();
 	}

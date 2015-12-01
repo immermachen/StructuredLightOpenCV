@@ -179,7 +179,7 @@ private:
 			TRACE("distortion = %g, %g\n", m_pro_dist, m_cam_dist);
 			//MessageBox::Show(m_pro_dist.ToString());
 
-			TRACE("---------- radial fundamental / apriori ----------\n");
+			TRACE("---------- radial fundamental / apriori ---Yang: here[reconstruct_epipolar_geometry] very slowly: need to optimize!!!-------\n");
 			//MessageBox::Show("6/7 Calculating radial fundamental / apriori Matrix");
 			slib::CVector<2,double> backup_pro_cod(m_pro_cod), backup_cam_cod(m_cam_cod);
 			m_pro_dist=m_cam_dist=0;

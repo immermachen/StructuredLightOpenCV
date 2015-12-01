@@ -21,6 +21,9 @@
 
 #include "opencv2\opencv.hpp"
 
+#define HEIGHT 2050  //Yang: Display picture
+#define WIDTH 2448   //Yang:
+
 namespace calibrate {
 
 	using namespace System;
@@ -353,7 +356,7 @@ namespace calibrate {
 			this->tabPage1->Location = System::Drawing::Point(4, 22);
 			this->tabPage1->Name = L"tabPage1";
 			this->tabPage1->Padding = System::Windows::Forms::Padding(3);
-			this->tabPage1->Size = System::Drawing::Size(640, 480);
+			this->tabPage1->Size = System::Drawing::Size(WIDTH, HEIGHT);
 			this->tabPage1->TabIndex = 0;
 			this->tabPage1->Text = L"Camera";
 			this->tabPage1->UseVisualStyleBackColor = true;
@@ -362,7 +365,7 @@ namespace calibrate {
 			// 
 			this->pictureCamera->Location = System::Drawing::Point(1, 2);
 			this->pictureCamera->Name = L"pictureCamera";
-			this->pictureCamera->Size = System::Drawing::Size(640, 480);
+			this->pictureCamera->Size = System::Drawing::Size(WIDTH, HEIGHT);
 			this->pictureCamera->TabIndex = 1;
 			this->pictureCamera->TabStop = false;
 			// 
@@ -372,7 +375,7 @@ namespace calibrate {
 			this->tabPage2->Location = System::Drawing::Point(4, 22);
 			this->tabPage2->Name = L"tabPage2";
 			this->tabPage2->Padding = System::Windows::Forms::Padding(3);
-			this->tabPage2->Size = System::Drawing::Size(640, 480);
+			this->tabPage2->Size = System::Drawing::Size(WIDTH, HEIGHT);
 			this->tabPage2->TabIndex = 1;
 			this->tabPage2->Text = L"Captures";
 			this->tabPage2->UseVisualStyleBackColor = true;
@@ -381,7 +384,7 @@ namespace calibrate {
 			// 
 			this->pictureCapture->Location = System::Drawing::Point(1, 2);
 			this->pictureCapture->Name = L"pictureCapture";
-			this->pictureCapture->Size = System::Drawing::Size(640, 480);
+			this->pictureCapture->Size = System::Drawing::Size(WIDTH, HEIGHT);
 			this->pictureCapture->TabIndex = 2;
 			this->pictureCapture->TabStop = false;
 			// 
@@ -390,7 +393,7 @@ namespace calibrate {
 			this->tabPage3->Controls->Add(this->pictureMask);
 			this->tabPage3->Location = System::Drawing::Point(4, 22);
 			this->tabPage3->Name = L"tabPage3";
-			this->tabPage3->Size = System::Drawing::Size(640, 480);
+			this->tabPage3->Size = System::Drawing::Size(WIDTH, HEIGHT);
 			this->tabPage3->TabIndex = 2;
 			this->tabPage3->Text = L"Mask";
 			this->tabPage3->UseVisualStyleBackColor = true;
@@ -399,7 +402,7 @@ namespace calibrate {
 			// 
 			this->pictureMask->Location = System::Drawing::Point(1, 1);
 			this->pictureMask->Name = L"pictureMask";
-			this->pictureMask->Size = System::Drawing::Size(640, 480);
+			this->pictureMask->Size = System::Drawing::Size(WIDTH, HEIGHT);
 			this->pictureMask->TabIndex = 3;
 			this->pictureMask->TabStop = false;
 			// 
@@ -408,7 +411,7 @@ namespace calibrate {
 			this->tabPage4->Controls->Add(this->pictureCorrX);
 			this->tabPage4->Location = System::Drawing::Point(4, 22);
 			this->tabPage4->Name = L"tabPage4";
-			this->tabPage4->Size = System::Drawing::Size(640, 480);
+			this->tabPage4->Size = System::Drawing::Size(WIDTH, HEIGHT);
 			this->tabPage4->TabIndex = 3;
 			this->tabPage4->Text = L"Correspondence X";
 			this->tabPage4->UseVisualStyleBackColor = true;
@@ -417,7 +420,7 @@ namespace calibrate {
 			// 
 			this->pictureCorrX->Location = System::Drawing::Point(1, 1);
 			this->pictureCorrX->Name = L"pictureCorrX";
-			this->pictureCorrX->Size = System::Drawing::Size(640, 480);
+			this->pictureCorrX->Size = System::Drawing::Size(WIDTH, HEIGHT);
 			this->pictureCorrX->TabIndex = 3;
 			this->pictureCorrX->TabStop = false;
 			// 
@@ -426,7 +429,7 @@ namespace calibrate {
 			this->tabPage5->Controls->Add(this->pictureCorrY);
 			this->tabPage5->Location = System::Drawing::Point(4, 22);
 			this->tabPage5->Name = L"tabPage5";
-			this->tabPage5->Size = System::Drawing::Size(640, 480);
+			this->tabPage5->Size = System::Drawing::Size(WIDTH, HEIGHT);
 			this->tabPage5->TabIndex = 4;
 			this->tabPage5->Text = L"Correspondence Y";
 			this->tabPage5->UseVisualStyleBackColor = true;
@@ -435,7 +438,7 @@ namespace calibrate {
 			// 
 			this->pictureCorrY->Location = System::Drawing::Point(1, 1);
 			this->pictureCorrY->Name = L"pictureCorrY";
-			this->pictureCorrY->Size = System::Drawing::Size(640, 480);
+			this->pictureCorrY->Size = System::Drawing::Size(WIDTH, HEIGHT);
 			this->pictureCorrY->TabIndex = 3;
 			this->pictureCorrY->TabStop = false;
 			// 
@@ -670,15 +673,27 @@ namespace calibrate {
 			if (captura)
 			{
 				Mat b;
+				double minVal, maxVal;
 				m_decoder->m_mMask[0].convertTo(b, CV_8UC1);
 				cvtColor(b, b, CV_GRAY2RGB);
 				DrawCvImage(&(IplImage)b, pictureMask);
-				Mat temp1 = Mat(m_decoder->m_mGray[0].rows, m_decoder->m_mGray[0].cols, CV_8UC1);
-				m_decoder->m_mGray[0].convertTo(temp1, CV_8UC1, 255 / m_options->m_nWidth, 0);
-				cvtColor(temp1, b, CV_GRAY2RGB);
+
+				Mat tmp;// = Mat(m_decoder->m_mGray[0].rows, m_decoder->m_mGray[0].cols, CV_8UC1);
+
+				tmp = m_decoder->m_mGray[0].clone();
+				minMaxIdx(tmp, &minVal, &maxVal);
+				cout << "m_mGray0 rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
+				tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0); 
+				//m_decoder->m_mGray[0].convertTo(temp1, CV_8UC1, 255 / m_options->m_nWidth, 0);
+				cvtColor(tmp, b, CV_GRAY2RGB);
 				DrawCvImage(&(IplImage)b, pictureCorrX);
-				m_decoder->m_mGray[1].convertTo(temp1, CV_8UC1, 255 / m_options->m_nWidth, 0);
-				cvtColor(temp1, b, CV_GRAY2RGB);
+
+				tmp = m_decoder->m_mGray[1].clone();
+				minMaxIdx(tmp, &minVal, &maxVal);
+				cout << "m_mGray1 rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
+				tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
+				//m_decoder->m_mGray[1].convertTo(tmp, CV_8UC1, 255 / m_options->m_nWidth, 0);
+				cvtColor(tmp, b, CV_GRAY2RGB);
 				DrawCvImage(&(IplImage)b, pictureCorrY);
 			}
 
@@ -741,8 +756,8 @@ namespace calibrate {
 				 //mask.convertTo(mask, CV_8U);
 				 //printf("chanesl %d %d", mask.channels(), decoder->m_mGray[0].channels());
 
-				 Mat b = decoder->m_mMask[1].clone();// Mat(640, 480, CV_16UC1);
-				 //cv::resize(decoder->m_mMask[1], b, cv::Size(640, 480), 0, 0, cv::INTER_CUBIC);
+				 Mat b = decoder->m_mMask[1].clone();// Mat(WIDTH, HEIGHT, CV_16UC1);
+				 //cv::resize(decoder->m_mMask[1], b, cv::Size(WIDTH, HEIGHT), 0, 0, cv::INTER_CUBIC);
 				 m_mask.Initialize(b.cols, decoder->m_mMask[1].rows);
 				 for (int i = 0; i < b.cols; i++)
 				 for (int j = 0; j < b.rows; j++)
@@ -753,8 +768,8 @@ namespace calibrate {
 				 for (int k = 0; k < 2; k++)
 				 {
 
-				 //						 Mat a = Mat(640, 480, CV_16UC1);
-				 //						 cv::resize(decoder->m_mGray[k], a, cv::Size(640, 480), 0, 0, cv::INTER_CUBIC);
+				 //						 Mat a = Mat(WIDTH, HEIGHT, CV_16UC1);
+				 //						 cv::resize(decoder->m_mGray[k], a, cv::Size(WIDTH, HEIGHT), 0, 0, cv::INTER_CUBIC);
 				 //m_phase_map[k].Initialize(decoder->m_mGray[k].cols, decoder->m_mGray[k].rows);
 				 Mat a = decoder->m_mGray[k].clone();
 				 m_phase_map[k].Initialize(a.cols, a.rows);
@@ -908,7 +923,7 @@ namespace calibrate {
 	private: System::Void backgroundWorker1_ProgressChanged(System::Object^  sender, System::ComponentModel::ProgressChangedEventArgs^  e) {
 				 if (!camBusy&&m_bShowWebcam){
 					 camBusy = 1;
-					 //IplImage *destination = cvCreateImage(cvSize(640, 480), m_frame->depth(), m_frame->channels());
+					 //IplImage *destination = cvCreateImage(cvSize(WIDTH, HEIGHT), m_frame->depth(), m_frame->channels());
 					 //cvResize(frame, destination);
 					 if (m_frame->cols>0 && m_frame->rows>0)
 						DrawCvImage(&(IplImage)(*m_frame), pictureCamera);

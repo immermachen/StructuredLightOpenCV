@@ -42,7 +42,6 @@ class CDecoder
     vector<Point3f> m_vPointCloud;
 	Mat m_mGrayError[2];
 	Mat m_mPhaseError[2];
-	Mat m_mPhaseMap[2];
 	Mat m_mFundamentalMatrix;
     Mat_<double> m_mEssentialMatrix;
 	float m_fDivisor[2];
@@ -52,7 +51,9 @@ class CDecoder
 public:
 	COptions* m_Info;
 	Mat m_mGray[2];
-	Mat m_mMask[2];
+	Mat m_mPhaseMap[2];//Yang, change from private to public 
+	Mat m_mReliableMask[2];//Yang: Maks for combination of phase and gray code
+	Mat m_mMask[2]; //Yang:Mask for graycode
 	CDecoder(COptions* Options);
 	bool Decode(float thres, vector<Mat>& vCaptures);
 	void DecodeGray(int direction,float int_threashold);
@@ -61,7 +62,7 @@ public:
 	static Mat MaskMat(Mat& img, Mat& mask,bool);
 	Mat DecodePhaseImages(vector<Mat>&, int);
 	void UnwrapPhase(Mat& phase, int period, Mat& reference, Mat& result, Mat& unwrap_error);
-	void CreateReliableMap(int dir, bool fringe);
+	void CreateReliableMap(int dir);
 	void BuildCorrespondence(Mat* grays);
     bool Calibrate(Mat& CameraMatrix, Mat& DistMatrix);
 	bool CalibrateRadial();

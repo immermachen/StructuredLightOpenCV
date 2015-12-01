@@ -204,10 +204,21 @@ public:
 		unsigned int n = 0, t;
 		aiMatrix4x4 m = nd->mTransformation;
 
+
 		// update transform
 		////Yang: error: unresolved token (0A000464) "extern "C" void __cdecl aiTransposeMatrix4
+		////So I use m.Transpose() instead of aiTransposeMatrix4
 		//aiTransposeMatrix4(&m); 
 		std::cout << "Yang: error: Render.h-->recursive_render-->unresolved token (0A000464) extern void __cdecl aiTransposeMatrix4" << std::endl;
+		std::cout << m.a1 << " " << m.a2 << " " << m.a3 << " " << m.a4  << std::endl;
+		std::cout << m.b1 << " " << m.b2 << " " << m.b3 << " " << m.b4 << std::endl;
+		std::cout << m.c1 << " " << m.c2 << " " << m.c3 << " " << m.c4 << std::endl;
+		std::cout << m.d1 << " " << m.d2 << " " << m.d3 << " " << m.d4 << std::endl;
+		m = m.Transpose();
+		std::cout << m.a1 << " " << m.a2 << " " << m.a3 << " " << m.a4 << std::endl;
+		std::cout << m.b1 << " " << m.b2 << " " << m.b3 << " " << m.b4 << std::endl;
+		std::cout << m.c1 << " " << m.c2 << " " << m.c3 << " " << m.c4 << std::endl;
+		std::cout << m.d1 << " " << m.d2 << " " << m.d3 << " " << m.d4 << std::endl;
 
 		glPushMatrix();
 		glMultMatrixf((float*)&m);
