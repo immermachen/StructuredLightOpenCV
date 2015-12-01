@@ -637,11 +637,11 @@ namespace calibrate {
 #pragma endregion
 	private: System::Void MyForm_Load(System::Object^  sender, System::EventArgs^  e)
 	{
-				 //m_options = new COptions(1920, 1080, 11, 4, true, true, true, true, true);
-				 m_options = new COptions(1024, 768, 10, 4, true, true, true, false, true);
+				 m_options = new COptions(1920, 1080, 11, 4, true, true, true, true, true);
+				 //m_options = new COptions(1024, 768, 10, 4, true, true, true, true, true);
 				 
-				 //string ruta = "../resources/Patterns/1920-1080/pattern-0";
-				 string ruta = "../resources/Patterns/pattern-0";
+				 string ruta = "../resources/Patterns/1920-1080/pattern-0";
+				 //string ruta = "../resources/Patterns/pattern-0";
 
 				 m_Cap = new CCapturador(m_options, ruta);
 				 m_renderer = new Renderer();
