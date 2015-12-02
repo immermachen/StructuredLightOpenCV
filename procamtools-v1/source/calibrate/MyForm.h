@@ -970,10 +970,12 @@ namespace calibrate {
 				 Bitmap^ bmp = gcnew Bitmap(CvImage->width, CvImage->height, CvImage->widthStep,
 					 System::Drawing::Imaging::PixelFormat::Format24bppRgb, IntPtr(CvImage->imageData)); //Format24bppRgb
 
-				 g->DrawImage(bmp, 0, 0, CvImage->width, CvImage->height);				 
+				 g->DrawImage(bmp, 0, 0, CvImage->width, CvImage->height);				
+				 //Yang
 				 pbx->SizeMode = System::Windows::Forms::PictureBoxSizeMode::StretchImage;
 				 pbx->Width = 640;
 				 pbx->Height = 480;
+
 				 pbx->Refresh();
 				 delete g;
 	}
