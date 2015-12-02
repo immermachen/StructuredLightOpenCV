@@ -93,7 +93,7 @@ bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool use
 		cvWaitKey(time);
 
 		imshow("Patrones", m_vPatterns[i]);
-		//cvWaitKey(200);//Yang
+		cvWaitKey(100);//Yang
 
 		CameraFrame camframe;
 		//m_VideoCapture >> frame;
@@ -139,7 +139,7 @@ bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool use
 	std::cout << "Pattern Captured." << std::endl;
 	cvDestroyWindow("Patrones");
 	//cvDestroyWindow("Camera");
-	SerializeCapturesDefault(m_vCaptures, "Vimba");
+	SerializeCapturesDefault(m_vCaptures, "aVi");
 	camera->stopCapture();
 	
 	return true;
@@ -272,6 +272,27 @@ string CCapturador::SerializeCapturesDefault(vector<Mat> imagenes, string str)
 		oss.clear();
 	}
 	return oss3.str();
+}
+
+void CCapturador::writeMatToFile(cv::Mat& m, const char* filename)
+{
+	ofstream fout(filename);
+
+	if (!fout)
+	{
+		cout << "File Not Opened" << endl;  return;
+	}
+
+	for (int i = 0; i<m.rows; i++)
+	{
+		for (int j = 0; j<m.cols; j++)
+		{
+			fout << m.at<float>(i, j) << "\t";
+		}
+		fout << endl;
+	}
+
+	fout.close();
 }
 
 bool CCapturador::LoadCapturesFromFiles(string ruta)

@@ -38,6 +38,7 @@ public:
 	static bool SerializeCaptures(vector<Mat> imagenes, string str);
 	static bool SerializeCaptures(vector<Mat> imagenes, vector<string> strs, const string& type = ".bmp");//Yang
 	static string SerializeCapturesDefault(vector<Mat> imagenes, string str);
+	static void CCapturador::writeMatToFile(cv::Mat& m, const char* filename);
 	bool tryCamera(int device);
 	~CCapturador();
 };

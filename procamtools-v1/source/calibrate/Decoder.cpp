@@ -56,21 +56,21 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 #endif 
 		if (m_Info->m_bPhase)
 		{
-   //         vector<Mat>::iterator begin = m_vCaptures.begin() + m_Info->m_nNumPatterns / 2;
-   //         vector<Mat>::iterator end = m_vCaptures.begin() + m_Info->m_nNumPatterns / 2 + m_Info->m_nNumFringes;
-			//vector<Mat> phaseImgs(begin, end);
-			//m_mPhaseMap[0] = DecodePhaseImages(phaseImgs, 0);
-			//tmp = m_mPhaseMap[0].clone();  //CV_32FC1
-			//tmp.convertTo(tmp, CV_8UC1, 255, 0);
-			//temp.push_back(tmp);
-			//imagenames.push_back("m_mMapPhase0_decode");
-			//UnwrapPhase(m_mPhaseMap[0], m_Info->m_nFringeInterval*m_Info->m_nNumFringes, m_mGray[0], m_mPhaseMap[0], m_mPhaseError[0]);
-			//tmp = m_mPhaseMap[0].clone();
-			//minMaxIdx(tmp, &minVal, &maxVal);
-			//cout << maxVal << endl;
-			//tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
-			//temp.push_back(tmp);
-			//imagenames.push_back("m_mMap0Phase");
+            vector<Mat>::iterator begin = m_vCaptures.begin() + m_Info->m_nNumPatterns / 2;
+            vector<Mat>::iterator end = m_vCaptures.begin() + m_Info->m_nNumPatterns / 2 + m_Info->m_nNumFringes;
+			vector<Mat> phaseImgs(begin, end);
+			m_mPhaseMap[0] = DecodePhaseImages(phaseImgs, 0);
+			tmp = m_mPhaseMap[0].clone();  //CV_32FC1
+			tmp.convertTo(tmp, CV_8UC1, 255, 0);
+			temp.push_back(tmp);
+			imagenames.push_back("m_mMapPhase0_decode");
+			UnwrapPhase(m_mPhaseMap[0], m_Info->m_nFringeInterval*m_Info->m_nNumFringes, m_mGray[0], m_mPhaseMap[0], m_mPhaseError[0]);
+			tmp = m_mPhaseMap[0].clone();
+			minMaxIdx(tmp, &minVal, &maxVal);
+			cout << maxVal << endl;
+			tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
+			temp.push_back(tmp);
+			imagenames.push_back("m_mMap0Phase");
 		}
 		else
 			m_mPhaseError[0] = Mat(m_mGray[0].rows, m_mGray[0].cols, CV_32FC1);
@@ -135,21 +135,21 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 
 		if (m_Info->m_bPhase)
 		{
-   //         vector<Mat>::iterator begin = m_vCaptures.begin() +  m_Info->m_nNumPatterns + m_Info->m_nNumFringes;
-   //         vector<Mat>::iterator end = m_vCaptures.begin() + m_Info->m_nNumPatterns + m_Info->m_nNumFringes*2;
-			//vector<Mat> phaseImgs(begin, end);
-			//m_mPhaseMap[1] = DecodePhaseImages(phaseImgs, 1);
-			//tmp = m_mPhaseMap[1].clone();  //CV_32FC1
-			//tmp.convertTo(tmp, CV_8UC1, 255, 0);
-			//temp.push_back(tmp);
-			//imagenames.push_back("m_mMapPhase1_decode");
-			//UnwrapPhase(m_mPhaseMap[1], m_Info->m_nFringeInterval*m_Info->m_nNumFringes, m_mGray[1], m_mPhaseMap[1], m_mPhaseError[1]);
-			////m_mPhaseMap = graycode, but it is float [1.0 1920.0]
-			//tmp = m_mPhaseMap[1].clone();
-			//tmp.convertTo(tmp, CV_8UC1, 255 / (m_Info->m_nWidth*1.0f), 0);
-			//cvtColor(tmp, tmp, CV_GRAY2BGR);
-			//temp.push_back(tmp);
-			//imagenames.push_back("m_mMap1Phase");
+            vector<Mat>::iterator begin = m_vCaptures.begin() +  m_Info->m_nNumPatterns + m_Info->m_nNumFringes;
+            vector<Mat>::iterator end = m_vCaptures.begin() + m_Info->m_nNumPatterns + m_Info->m_nNumFringes*2;
+			vector<Mat> phaseImgs(begin, end);
+			m_mPhaseMap[1] = DecodePhaseImages(phaseImgs, 1);
+			tmp = m_mPhaseMap[1].clone();  //CV_32FC1
+			tmp.convertTo(tmp, CV_8UC1, 255, 0);
+			temp.push_back(tmp);
+			imagenames.push_back("m_mMapPhase1_decode");
+			UnwrapPhase(m_mPhaseMap[1], m_Info->m_nFringeInterval*m_Info->m_nNumFringes, m_mGray[1], m_mPhaseMap[1], m_mPhaseError[1]);
+			//m_mPhaseMap = graycode, but it is float [1.0 1920.0]
+			tmp = m_mPhaseMap[1].clone();
+			tmp.convertTo(tmp, CV_8UC1, 255 / (m_Info->m_nWidth*1.0f), 0);
+			cvtColor(tmp, tmp, CV_GRAY2BGR);
+			temp.push_back(tmp);
+			imagenames.push_back("m_mMap1Phase");
 		}
 		else
 			m_mPhaseError[1] = Mat(m_mGray[1].rows, m_mGray[1].cols, CV_32FC1);
@@ -287,14 +287,21 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 	cap.SerializeCaptures(temp, imagenames);
 #endif
 
-
-	m_mPhaseMap[0] = m_mGray[0];
-	m_mPhaseMap[1] = m_mGray[1];
+	if (m_Info->m_bPhase) //Yang: for calibration function, it use m_mPhaseMap;
+	{
+		m_mGray[0] = m_mPhaseMap[0];
+		m_mGray[1] = m_mPhaseMap[1];
+	}
 
 	tmp = m_mGray[0].clone();
 	minMaxIdx(tmp, &minVal, &maxVal);
 	cout << "m_mGray0 rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
 	//tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
+	//cv::imwrite("~/imgOut.bmp", Mat(512, 512, CV_32FC1, tmp));
+	//cv::imwrite("m_mGray0.PNG", tmp);
+	const char* filename = "m_mGray0.txt";
+	CCapturador::writeMatToFile(tmp, filename);
+
 	cv::imwrite("m_mGray0.bmp", tmp);
 
 	tmp = m_mGray[1].clone();
@@ -467,7 +474,7 @@ void CDecoder::UnwrapPhase(Mat& phase, int period, Mat& reference, Mat& result, 
 	for (int y = 0; y < phase.cols;y++)
 	for (int x = 0; x < phase.rows; x++)
 	{
-		int graycode = reference.at<ushort>(x, y);//[0 1024], e.g. =11
+		int graycode = reference.at<ushort>(x, y);//ushort=[0-65535], 16bit. so for [0 1024], e.g. =11
 		float moire_phase = phase.at<float>(x, y); //correct:[0 1],  false case:[-2 2] maybe? so need to correct it. e.g. = 1.3
 		float gray_phase = (float)(graycode % period) / period; //[0 1], e.g. =(11%4)/4=0.75
         if (!moire_phase)

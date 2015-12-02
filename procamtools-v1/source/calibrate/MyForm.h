@@ -95,6 +95,7 @@ namespace calibrate {
 	private: System::Windows::Forms::Label^  label7;
 	private: System::Windows::Forms::ComboBox^  comboBoxThress;
 	private: System::Windows::Forms::ToolStripMenuItem^  view3DModelToolStripMenuItem;
+	private: System::Windows::Forms::CheckBox^  checkBoxPhase;
 
 
 
@@ -194,6 +195,7 @@ namespace calibrate {
 			this->progressBar1 = (gcnew System::Windows::Forms::ProgressBar());
 			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->labelProggres = (gcnew System::Windows::Forms::Label());
+			this->checkBoxPhase = (gcnew System::Windows::Forms::CheckBox());
 			this->menuStrip1->SuspendLayout();
 			this->tabControl1->SuspendLayout();
 			this->tabPage1->SuspendLayout();
@@ -462,6 +464,7 @@ namespace calibrate {
 			this->groupBox1->Controls->Add(this->label6);
 			this->groupBox1->Controls->Add(this->label5);
 			this->groupBox1->Controls->Add(this->textBoxTime);
+			this->groupBox1->Controls->Add(this->checkBoxPhase);
 			this->groupBox1->Controls->Add(this->checkBoxComplementary);
 			this->groupBox1->Controls->Add(this->label3);
 			this->groupBox1->Controls->Add(this->label2);
@@ -605,6 +608,18 @@ namespace calibrate {
 			this->labelProggres->Size = System::Drawing::Size(0, 13);
 			this->labelProggres->TabIndex = 7;
 			// 
+			// checkBoxPhase
+			// 
+			this->checkBoxPhase->AutoSize = true;
+			this->checkBoxPhase->Checked = true;
+			this->checkBoxPhase->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->checkBoxPhase->Location = System::Drawing::Point(13, 139);
+			this->checkBoxPhase->Name = L"checkBoxPhase";
+			this->checkBoxPhase->Size = System::Drawing::Size(141, 17);
+			this->checkBoxPhase->TabIndex = 5;
+			this->checkBoxPhase->Text = L"Use PhaseShift Patterns";
+			this->checkBoxPhase->UseVisualStyleBackColor = true;
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -644,11 +659,24 @@ namespace calibrate {
 #pragma endregion
 	private: System::Void MyForm_Load(System::Object^  sender, System::EventArgs^  e)
 	{
-				 m_options = new COptions(1920, 1080, 11, 4, true, true, true, false, true);
-				 //m_options = new COptions(1024, 768, 10, 4, true, true, true, false, true);
-				 
-				 string ruta = "../resources/Patterns/1920-1080-graycode/pattern-0";
-				 //string ruta = "../resources/Patterns/pattern-0";
+		string ruta;
+		if (this->checkBoxPhase->Checked)
+		{
+			m_options = new COptions(1920, 1080, 11, 4, true, true, true, true, true);
+			//m_options = new COptions(1024, 768, 10, 4, true, true, true, false, true);
+
+			ruta = "../resources/Patterns/1920-1080-phase/pattern-0";
+			//string ruta = "../resources/Patterns/pattern-0";
+		}
+		else
+		{
+			m_options = new COptions(1920, 1080, 11, 0, true, true, true, false, true);
+			//m_options = new COptions(1024, 768, 10, 4, true, true, true, false, true);
+
+			ruta = "../resources/Patterns/1920-1080-graycode/pattern-0";
+			//string ruta = "../resources/Patterns/pattern-0";
+		}
+
 
 				 m_Cap = new CCapturador(m_options, ruta);
 				 m_renderer = new Renderer();
