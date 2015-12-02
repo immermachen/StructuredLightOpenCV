@@ -307,7 +307,7 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 	cv::imwrite("m_mGrayError1.bmp", m_mGrayError[1]);
 
 	cv::imwrite("m_mMask_merged.bmp", m_mMask[0]);
-	cv::imwrite("m_mReliableMask_combine.bmp", m_mReliableMask[0]);
+	cv::imwrite("m_mReliableMask_final.bmp", m_mReliableMask[0]);
 
 	return true;
 }

@@ -149,6 +149,7 @@ namespace calibrate {
 		/// </summary>
 		void InitializeComponent(void)
 		{
+			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
 			this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
 			this->structuredLightToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->loadCapturesToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -356,16 +357,17 @@ namespace calibrate {
 			this->tabPage1->Location = System::Drawing::Point(4, 22);
 			this->tabPage1->Name = L"tabPage1";
 			this->tabPage1->Padding = System::Windows::Forms::Padding(3);
-			this->tabPage1->Size = System::Drawing::Size(WIDTH, HEIGHT);
+			this->tabPage1->Size = System::Drawing::Size(640, 480);
 			this->tabPage1->TabIndex = 0;
 			this->tabPage1->Text = L"Camera";
 			this->tabPage1->UseVisualStyleBackColor = true;
 			// 
 			// pictureCamera
 			// 
-			this->pictureCamera->Location = System::Drawing::Point(1, 2);
+			this->pictureCamera->Location = System::Drawing::Point(3, 3);
 			this->pictureCamera->Name = L"pictureCamera";
-			this->pictureCamera->Size = System::Drawing::Size(WIDTH, HEIGHT);
+			this->pictureCamera->Size = System::Drawing::Size(634, 474);
+			this->pictureCamera->SizeMode = System::Windows::Forms::PictureBoxSizeMode::StretchImage;
 			this->pictureCamera->TabIndex = 1;
 			this->pictureCamera->TabStop = false;
 			// 
@@ -375,16 +377,17 @@ namespace calibrate {
 			this->tabPage2->Location = System::Drawing::Point(4, 22);
 			this->tabPage2->Name = L"tabPage2";
 			this->tabPage2->Padding = System::Windows::Forms::Padding(3);
-			this->tabPage2->Size = System::Drawing::Size(WIDTH, HEIGHT);
+			this->tabPage2->Size = System::Drawing::Size(640, 480);
 			this->tabPage2->TabIndex = 1;
 			this->tabPage2->Text = L"Captures";
 			this->tabPage2->UseVisualStyleBackColor = true;
 			// 
 			// pictureCapture
 			// 
-			this->pictureCapture->Location = System::Drawing::Point(1, 2);
+			this->pictureCapture->Location = System::Drawing::Point(3, 3);
 			this->pictureCapture->Name = L"pictureCapture";
-			this->pictureCapture->Size = System::Drawing::Size(WIDTH, HEIGHT);
+			this->pictureCapture->Size = System::Drawing::Size(634, 474);
+			this->pictureCapture->SizeMode = System::Windows::Forms::PictureBoxSizeMode::StretchImage;
 			this->pictureCapture->TabIndex = 2;
 			this->pictureCapture->TabStop = false;
 			// 
@@ -393,16 +396,17 @@ namespace calibrate {
 			this->tabPage3->Controls->Add(this->pictureMask);
 			this->tabPage3->Location = System::Drawing::Point(4, 22);
 			this->tabPage3->Name = L"tabPage3";
-			this->tabPage3->Size = System::Drawing::Size(WIDTH, HEIGHT);
+			this->tabPage3->Size = System::Drawing::Size(640, 480);
 			this->tabPage3->TabIndex = 2;
 			this->tabPage3->Text = L"Mask";
 			this->tabPage3->UseVisualStyleBackColor = true;
 			// 
 			// pictureMask
 			// 
-			this->pictureMask->Location = System::Drawing::Point(1, 1);
+			this->pictureMask->Location = System::Drawing::Point(0, 0);
 			this->pictureMask->Name = L"pictureMask";
-			this->pictureMask->Size = System::Drawing::Size(WIDTH, HEIGHT);
+			this->pictureMask->Size = System::Drawing::Size(640, 480);
+			this->pictureMask->SizeMode = System::Windows::Forms::PictureBoxSizeMode::StretchImage;
 			this->pictureMask->TabIndex = 3;
 			this->pictureMask->TabStop = false;
 			// 
@@ -411,16 +415,17 @@ namespace calibrate {
 			this->tabPage4->Controls->Add(this->pictureCorrX);
 			this->tabPage4->Location = System::Drawing::Point(4, 22);
 			this->tabPage4->Name = L"tabPage4";
-			this->tabPage4->Size = System::Drawing::Size(WIDTH, HEIGHT);
+			this->tabPage4->Size = System::Drawing::Size(640, 480);
 			this->tabPage4->TabIndex = 3;
 			this->tabPage4->Text = L"Correspondence X";
 			this->tabPage4->UseVisualStyleBackColor = true;
 			// 
 			// pictureCorrX
 			// 
-			this->pictureCorrX->Location = System::Drawing::Point(1, 1);
+			this->pictureCorrX->Location = System::Drawing::Point(0, 0);
 			this->pictureCorrX->Name = L"pictureCorrX";
-			this->pictureCorrX->Size = System::Drawing::Size(WIDTH, HEIGHT);
+			this->pictureCorrX->Size = System::Drawing::Size(640, 480);
+			this->pictureCorrX->SizeMode = System::Windows::Forms::PictureBoxSizeMode::StretchImage;
 			this->pictureCorrX->TabIndex = 3;
 			this->pictureCorrX->TabStop = false;
 			// 
@@ -429,16 +434,18 @@ namespace calibrate {
 			this->tabPage5->Controls->Add(this->pictureCorrY);
 			this->tabPage5->Location = System::Drawing::Point(4, 22);
 			this->tabPage5->Name = L"tabPage5";
-			this->tabPage5->Size = System::Drawing::Size(WIDTH, HEIGHT);
+			this->tabPage5->Size = System::Drawing::Size(640, 480);
 			this->tabPage5->TabIndex = 4;
 			this->tabPage5->Text = L"Correspondence Y";
 			this->tabPage5->UseVisualStyleBackColor = true;
 			// 
 			// pictureCorrY
 			// 
-			this->pictureCorrY->Location = System::Drawing::Point(1, 1);
+			this->pictureCorrY->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"pictureCorrY.Image")));
+			this->pictureCorrY->Location = System::Drawing::Point(0, 0);
 			this->pictureCorrY->Name = L"pictureCorrY";
-			this->pictureCorrY->Size = System::Drawing::Size(WIDTH, HEIGHT);
+			this->pictureCorrY->Size = System::Drawing::Size(640, 480);
+			this->pictureCorrY->SizeMode = System::Windows::Forms::PictureBoxSizeMode::StretchImage;
 			this->pictureCorrY->TabIndex = 3;
 			this->pictureCorrY->TabStop = false;
 			// 
@@ -637,11 +644,11 @@ namespace calibrate {
 #pragma endregion
 	private: System::Void MyForm_Load(System::Object^  sender, System::EventArgs^  e)
 	{
-				 //m_options = new COptions(1920, 1080, 11, 4, true, true, true, true, true);
-				 m_options = new COptions(1024, 768, 10, 4, true, true, true, false, true);
+				 m_options = new COptions(1920, 1080, 11, 4, true, true, true, false, true);
+				 //m_options = new COptions(1024, 768, 10, 4, true, true, true, false, true);
 				 
-				 //string ruta = "../resources/Patterns/1920-1080/pattern-0";
-				 string ruta = "../resources/Patterns/pattern-0";
+				 string ruta = "../resources/Patterns/1920-1080-graycode/pattern-0";
+				 //string ruta = "../resources/Patterns/pattern-0";
 
 				 m_Cap = new CCapturador(m_options, ruta);
 				 m_renderer = new Renderer();
@@ -682,7 +689,7 @@ namespace calibrate {
 
 				tmp = m_decoder->m_mGray[0].clone();
 				minMaxIdx(tmp, &minVal, &maxVal);
-				cout << "m_mGray0 rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
+				//cout << "m_mGray0 rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
 				tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0); 
 				//m_decoder->m_mGray[0].convertTo(temp1, CV_8UC1, 255 / m_options->m_nWidth, 0);
 				cvtColor(tmp, b, CV_GRAY2RGB);
@@ -690,7 +697,7 @@ namespace calibrate {
 
 				tmp = m_decoder->m_mGray[1].clone();
 				minMaxIdx(tmp, &minVal, &maxVal);
-				cout << "m_mGray1 rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
+				//cout << "m_mGray1 rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
 				tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
 				//m_decoder->m_mGray[1].convertTo(tmp, CV_8UC1, 255 / m_options->m_nWidth, 0);
 				cvtColor(tmp, b, CV_GRAY2RGB);
@@ -963,9 +970,11 @@ namespace calibrate {
 				 Bitmap^ bmp = gcnew Bitmap(CvImage->width, CvImage->height, CvImage->widthStep,
 					 System::Drawing::Imaging::PixelFormat::Format24bppRgb, IntPtr(CvImage->imageData)); //Format24bppRgb
 
-				 g->DrawImage(bmp, 0, 0, CvImage->width, CvImage->height);
+				 g->DrawImage(bmp, 0, 0, CvImage->width, CvImage->height);				 
+				 pbx->SizeMode = System::Windows::Forms::PictureBoxSizeMode::StretchImage;
+				 pbx->Width = 640;
+				 pbx->Height = 480;
 				 pbx->Refresh();
-
 				 delete g;
 	}
 
