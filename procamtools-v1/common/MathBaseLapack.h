@@ -44,7 +44,7 @@ void SingularValueDecomposition(const CMatrixType& mat, // in
 	char jobvt = bCalcVt ? 'A' : 'N';
 	int m = rows;
 	int n = cols;
-	double *a = new double [rows*cols]; // will be destroyed
+	double *a = new double [rows*cols]; // will be destroyed. Yang: why???[2803630 9]
 	for (int i=0; i<rows*cols; i++) a[i] = mat.ptr()[i];
 	int lda = m;
 	double *s = new double [dim];

@@ -21,8 +21,6 @@
 
 #include "opencv2\opencv.hpp"
 
-#define HEIGHT 2050  //Yang: Display picture
-#define WIDTH 2448   //Yang:
 
 namespace calibrate {
 
@@ -443,7 +441,6 @@ namespace calibrate {
 			// 
 			// pictureCorrY
 			// 
-			this->pictureCorrY->Image = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"pictureCorrY.Image")));
 			this->pictureCorrY->Location = System::Drawing::Point(0, 0);
 			this->pictureCorrY->Name = L"pictureCorrY";
 			this->pictureCorrY->Size = System::Drawing::Size(640, 480);
@@ -660,9 +657,11 @@ namespace calibrate {
 	private: System::Void MyForm_Load(System::Object^  sender, System::EventArgs^  e)
 	{
 		string ruta;
-		if (this->checkBoxPhase->Checked)
+		m_options = new COptions("options.ini");
+
+		if (m_options->m_nNumFringes>0)
 		{
-			m_options = new COptions(1920, 1080, 11, 4, true, true, true, true, true);
+			//m_options = new COptions(1920, 1080, 11, 4, true, true, true, true, true);
 			//m_options = new COptions(1024, 768, 10, 4, true, true, true, false, true);
 
 			ruta = "../resources/Patterns/1920-1080-phase/pattern-0";
@@ -670,7 +669,7 @@ namespace calibrate {
 		}
 		else
 		{
-			m_options = new COptions(1920, 1080, 11, 0, true, true, true, false, true);
+			//m_options = new COptions(1920, 1080, 11, 0, true, true, true, false, true);
 			//m_options = new COptions(1024, 768, 10, 4, true, true, true, false, true);
 
 			ruta = "../resources/Patterns/1920-1080-graycode/pattern-0";
@@ -683,6 +682,7 @@ namespace calibrate {
 				 m_bShowWebcam = false;
 				 m_bStartingWorker = true;
 				 m_opt = new options_t();
+				 m_opt->load("options.ini");
 				 m_opt->debug = true;
 				 m_decoder = new CDecoder(m_options);
 				 m_calib = new CProCamCalibrate(*m_opt);

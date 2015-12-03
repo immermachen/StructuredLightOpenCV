@@ -26,23 +26,19 @@ CCapturador::CCapturador()
 CCapturador::CCapturador(COptions* opt, string ruta) :  m_Options(opt)
 {
 	m_nPatterns = m_Options->m_nNumPatterns;
-	if (m_Options->m_bVertical)
-		m_Options->m_nNumPatterns *= 2;
-	if (m_Options->m_bComplementary)
-		m_Options->m_nNumPatterns *= 2;
-	if (m_Options->m_bPhase)
-	{
-		m_nPatterns = m_Options->m_nNumPatterns + m_Options->m_nNumFringes * 2;
-	}
-	else
-	{
-		m_nPatterns = m_Options->m_nNumPatterns;
-	}
+	
+
+	// Initialize camera
+	camera = VirtualCamera::NewCamera(0, 0, triggerModeSoftware);
+}
+
+bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool useComp)
+{
 	std::cout << "Yang:CCapturador-->Load pattern m_nPatterns=" << m_nPatterns << std::endl;
 	for (int i = 0; i < m_nPatterns; i++)
 	{
 		std::ostringstream oss;
-		oss << ruta;
+		oss << m_Options->m_nPatternPath;
 		if (i < 10)
 			oss << "0";
 		oss << i << ".bmp";
@@ -53,12 +49,6 @@ CCapturador::CCapturador(COptions* opt, string ruta) :  m_Options(opt)
 		oss.clear();
 	}
 
-	// Initialize camera
-	camera = VirtualCamera::NewCamera(0, 0, triggerModeSoftware);
-}
-
-bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool useComp)
-{
 	m_vCaptures.clear();	
 	camera->startCapture();
 	bool bMakeCapture = false;
@@ -274,7 +264,7 @@ string CCapturador::SerializeCapturesDefault(vector<Mat> imagenes, string str)
 	return oss3.str();
 }
 
-void CCapturador::writeMatToFile(cv::Mat& m, const char* filename)
+void CCapturador::writeMatToFile(cv::Mat& m, const char* filename, int dir)
 {
 	ofstream fout(filename);
 
@@ -282,14 +272,27 @@ void CCapturador::writeMatToFile(cv::Mat& m, const char* filename)
 	{
 		cout << "File Not Opened" << endl;  return;
 	}
-
-	for (int i = 0; i<m.rows; i++)
+	if (dir == 0)
 	{
-		for (int j = 0; j<m.cols; j++)
+		for (int i = m.rows / 2; i < m.rows / 2 + 20; i++)
 		{
-			fout << m.at<float>(i, j) << "\t";
+			for (int j = 0; j < m.cols; j++)
+			{
+				fout << m.at<double>(i, j) << "\t";
+			}
+			fout << endl;
 		}
-		fout << endl;
+	}
+	else
+	{
+		for (int j = m.cols / 2 +50; j < m.cols / 2 + 70; j++)
+		{
+			for (int i = 0; i < m.rows; i++)
+			{
+				fout << m.at<double>(i, j) << "\t";
+			}
+			fout << endl;
+		}
 	}
 
 	fout.close();
@@ -299,7 +302,7 @@ bool CCapturador::LoadCapturesFromFiles(string ruta)
 {
 	m_vCaptures.clear();
 	m_nPatterns = m_Options->m_nNumPatterns;
-	for (int i = 0; i < m_nPatterns + m_Options->m_nNumFringes * 2; i++)
+	for (int i = 0; i < m_nPatterns; i++)
 	{
 		std::ostringstream oss;
 		oss << ruta;
@@ -416,6 +419,29 @@ m_bPhase(fringes)
 	}
 }
 
+
+COptions::COptions(const std::string& filename)
+{
+	load(filename);
+	if (m_useConsole)
+	{
+		BOOL bOk = AllocConsole();
+		if (bOk)
+		{
+			int fd;
+			HANDLE hOutput;
+			FILE* fp;
+			hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+			fd = _open_osfhandle((intptr_t)hOutput, _O_TEXT);
+			fp = _fdopen(fd, "w");
+			*stdout = *fp;
+			char *pBuffer = (char*)malloc(32);
+			setvbuf(stdout, pBuffer, _IOFBF, 32);
+			SetConsoleTitle(TEXT("Structured Light Mapping V1 Josue Page Vizcaino"));
+		}
+	}
+}
+
 int COptions::GetNumBits(int dir)
 {
 	if (dir)
@@ -423,6 +449,37 @@ int COptions::GetNumBits(int dir)
 	else
 		return  ceilf(logf(m_nWidth) / logf(2));
 }
+void COptions::load(const std::string& filename)
+{
+	slib::CIniFile ini;
+	ini.Load(filename);
+
+	m_nWidth = ini.GetInt("projector", "width");
+	m_nHeight = ini.GetInt("projector", "height");
+	m_fProjectorCenter = ini.GetFloat("projector", "vertical_center");
+
+	m_nNumFringes = ini.GetInt("phase", "nfringes");
+	m_nFringeInterval = ini.GetInt("phase", "interval");
+
+	m_bHorizontal = ini.GetBool("pattern", "horizontal");
+	m_bVertical = ini.GetBool("pattern", "vertical");
+	m_bComplementary = ini.GetBool("pattern", "complementary");
+	m_debug = ini.GetBool("pattern", "debug");
+	m_nPatternPath = ini.GetString("pattern","patternpath");
+
+	m_intensity_threshold = ini.GetFloat("reconstruction", "threshold");
+	m_nsamples = ini.GetInt("reconstruction", "nsamples");
+
+	m_useConsole = ini.GetBool("Control", "useConsole");
+
+	m_nBasePatterns = GetNumBits(0);
+	m_nBasePatterns_V = GetNumBits(1);
+
+	m_nNumPatterns = m_nBasePatterns * 2 + m_nBasePatterns_V * 2 + m_nNumFringes * 2;
+
+	ini.Dump();
+}
+
 /*
 void COptions::GetDesktopResolution(int& horizontal, int& vertical)
 {

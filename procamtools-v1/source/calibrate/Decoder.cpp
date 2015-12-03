@@ -54,10 +54,10 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 		imagenames.push_back("m_mErrorGray0");
 
 #endif 
-		if (m_Info->m_bPhase)
+		if (m_Info->m_nNumFringes>0)
 		{
-            vector<Mat>::iterator begin = m_vCaptures.begin() + m_Info->m_nNumPatterns / 2;
-            vector<Mat>::iterator end = m_vCaptures.begin() + m_Info->m_nNumPatterns / 2 + m_Info->m_nNumFringes;
+			vector<Mat>::iterator begin = m_vCaptures.begin() + m_Info->m_nBasePatterns * 2;
+			vector<Mat>::iterator end = m_vCaptures.begin() + m_Info->m_nBasePatterns * 2 + m_Info->m_nNumFringes;
 			vector<Mat> phaseImgs(begin, end);
 			m_mPhaseMap[0] = DecodePhaseImages(phaseImgs, 0);
 			tmp = m_mPhaseMap[0].clone();  //CV_32FC1
@@ -133,10 +133,10 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 
 #endif
 
-		if (m_Info->m_bPhase)
+		if (m_Info->m_nNumFringes>0)
 		{
-            vector<Mat>::iterator begin = m_vCaptures.begin() +  m_Info->m_nNumPatterns + m_Info->m_nNumFringes;
-            vector<Mat>::iterator end = m_vCaptures.begin() + m_Info->m_nNumPatterns + m_Info->m_nNumFringes*2;
+            vector<Mat>::iterator begin = m_vCaptures.begin() +  m_Info->m_nNumPatterns - m_Info->m_nNumFringes;
+            vector<Mat>::iterator end = m_vCaptures.begin() + m_Info->m_nNumPatterns;
 			vector<Mat> phaseImgs(begin, end);
 			m_mPhaseMap[1] = DecodePhaseImages(phaseImgs, 1);
 			tmp = m_mPhaseMap[1].clone();  //CV_32FC1
@@ -287,34 +287,46 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 	cap.SerializeCaptures(temp, imagenames);
 #endif
 
-	if (m_Info->m_bPhase) //Yang: for calibration function, it use m_mPhaseMap;
+	if (m_Info->m_nNumFringes>0) //Yang: for calibration function, it use m_mPhaseMap;
 	{
 		m_mGray[0] = m_mPhaseMap[0];
 		m_mGray[1] = m_mPhaseMap[1];
 	}
 
-	tmp = m_mGray[0].clone();
-	minMaxIdx(tmp, &minVal, &maxVal);
-	cout << "m_mGray0 rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;	
-	string filename = "m_mGray0.txt";
-	CCapturador::writeMatToFile(tmp, filename.c_str());
-	tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
-	cv::imwrite("m_mGray0.bmp", tmp);
+	//tmp = m_mGray[0].clone();
+	//minMaxIdx(tmp, &minVal, &maxVal);
+	//cout << "m_mGray0 rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;	
+	//string filename = "m_mGray0.txt";
+	//CCapturador::writeMatToFile(tmp, filename.c_str(),0);
+	//tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
+	//cv::imwrite("m_mGray0.bmp", tmp);
 
-	tmp = m_mGray[1].clone();
-	Mat tmp1 = tmp.t();
-	minMaxIdx(tmp, &minVal, &maxVal);
-	cout << "m_mGray1 rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
-	filename = "m_mGray1.txt";
-	CCapturador::writeMatToFile(tmp1, filename.c_str());	
-	tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
-	cv::imwrite("m_mGray1.bmp", tmp);
+	//tmp = m_mGray[1].clone();
+	//minMaxIdx(tmp, &minVal, &maxVal);
+	//cout << "m_mGray1 rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
+	//filename = "m_mGray1.txt";
+	//CCapturador::writeMatToFile(tmp, filename.c_str(),1);	
+	//tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
+	//cv::imwrite("m_mGray1.bmp", tmp);
 
-	cv::imwrite("m_mGrayError0.bmp", m_mGrayError[0]);
-	cv::imwrite("m_mGrayError1.bmp", m_mGrayError[1]);
+	//cv::imwrite("m_mGrayError0.bmp", m_mGrayError[0]);
+	//cv::imwrite("m_mGrayError1.bmp", m_mGrayError[1]);
 
-	cv::imwrite("m_mMask_merged.bmp", m_mMask[0]);
-	cv::imwrite("m_mReliableMask_final.bmp", m_mReliableMask[0]);
+	//cv::imwrite("m_mMask_merged.bmp", m_mMask[0]);
+	//cv::imwrite("m_mReliableMask_final.bmp", m_mReliableMask[0]);
+
+	////use mask
+	//Mat m_mGray0 = MaskMat(m_mGray[0], m_mReliableMask[0], true);
+	//Mat m_mGray1 = MaskMat(m_mGray[1], m_mReliableMask[0], true);	
+	//filename = "m_mGray0_Masked.txt";
+	//CCapturador::writeMatToFile(m_mGray0, filename.c_str(),0);
+	//filename = "m_mGray1_Masked.txt";
+	//CCapturador::writeMatToFile(m_mGray1, filename.c_str(),1);
+
+	//m_mGray0.convertTo(m_mGray0, CV_8UC1, 255 / maxVal, 0);
+	//cv::imwrite("m_mGray0_masked.bmp", m_mGray0);
+	//m_mGray1.convertTo(m_mGray1, CV_8UC1, 255 / maxVal, 0);
+	//cv::imwrite("m_mGray1_masked.bmp", m_mGray1);
 
 	return true;
 }
@@ -332,7 +344,7 @@ void CDecoder::DecodeGray(int dir,float int_threshold)
 			
 			//Yang
 			int numphase = 0;
-			if (m_Info->m_bPhase && dir == 1)
+			if (m_Info->m_nNumFringes>0 && dir == 1)
 			{
 				numphase = m_Info->m_nNumFringes;
 			}
@@ -521,7 +533,7 @@ void CDecoder::CreateReliableMap(int dir)
 	for (int y = 0; y < m_mReliableMask[dir].cols; y++)
 		for (int x = 0; x < m_mReliableMask[dir].rows; x++)
 		{
-			if (m_Info->m_bPhase)
+			if (m_Info->m_nNumFringes>0)
 			{
 				if (m_mReliableMask[dir].at<float>(x, y) < maxError  && m_mGrayError[dir].at<uchar>(x, y) > m_fDivisor[dir] * 2)//Yang:???
 					m_mReliableMask[dir].at<float>(x, y) = 255;
@@ -556,23 +568,23 @@ int CDecoder::ConvertGrayToBinary(const unsigned long graycode)
 
 Mat CDecoder::MaskMat(Mat& img, Mat& mask,bool b16)
 {
-	//Mat a = img.clone();
 	assert(img.size() == mask.size());
+	Mat tmp = img.clone();
 	if (b16)
 	{
 		for (int i = 0; i < img.cols; i++)
 		for (int j = 0; j < img.rows; j++)
 		if (mask.at<ushort>(j, i) == 0)
-			img.at<ushort>(j, i) = 0;
+			tmp.at<double>(j, i) = 0;
 	}
 	else
 	{
 		for (int i = 0; i < img.cols; i++)
 		for (int j = 0; j < img.rows; j++)
 		if (mask.at<uchar>(j, i) == 0)
-			img.at<ushort>(j, i) = 0;
+			tmp.at<double>(j, i) = 0;
 	}
-	return img;
+	return tmp;
 }
 
 
