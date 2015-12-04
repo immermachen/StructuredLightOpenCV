@@ -764,6 +764,8 @@ namespace calibrate {
 					 }
 				 }
 
+
+
 				 /*
 				 try
 				 {
@@ -1010,17 +1012,29 @@ namespace calibrate {
 
 	private: System::Void calibrateCameraProjectorToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e)
 	{
+		//Debug: read Gray Map and Mask;
+		cv::FileStorage storage0("m_mGray0.yml", cv::FileStorage::READ);
+		cv::FileStorage storage1("m_mGray1.yml", cv::FileStorage::READ);
+		cv::FileStorage storage("m_mMask0.yml", cv::FileStorage::READ);
+		storage0["m_mGray0"] >> m_decoder->m_mGray[0];
+		storage1["m_mGray1"] >> m_decoder->m_mGray[1];
+		storage["m_mMask0"] >> m_decoder->m_mMask[0];
+
+
 				 if (m_decoder->m_mGray[0].empty())
 				 {
-					 MessageBox::Show("No hay información para calibrar. Carge capturas para continuar.",
+					 MessageBox::Show("No m_mGray!.",
 						 "Error", MessageBoxButtons::OK,
 						 MessageBoxIcon::Error);
 					 return;
 				 }
 
-				 Mat b = m_decoder->m_mMask[1].clone();
-				 slib::Field<2, float> m_mask;
-				 m_mask.Initialize(b.cols, m_decoder->m_mMask[1].rows);
+				 //Yang:Why use Mask[1], but Mask[0]=Mask[1], it makes me uncomfortable!
+				 //Mat b = m_decoder->m_mMask[1].clone();
+				 Mat b = m_decoder->m_mMask[0].clone();
+				 slib::Field<2, float> m_mask;				 
+				 //m_mask.Initialize(b.cols, m_decoder->m_mMask[1].rows); //Yang: stupid
+				 m_mask.Initialize(b.cols, b.rows);
 				 for (int i = 0; i < b.cols; i++)
 				 for (int j = 0; j < b.rows; j++)
 					 m_mask.cell(i, j) = b.at<ushort>(j, i);
@@ -1046,172 +1060,179 @@ namespace calibrate {
 
 	private: System::Void saveCalibrationMatrixToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e)
 	{
-				 SaveFileDialog^ saveFileDialog = gcnew SaveFileDialog;
-				 saveFileDialog->InitialDirectory = "$(ProjectDir)";
-				 saveFileDialog->Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-				 //saveFileDialog->FilterIndex = 1;
-				 saveFileDialog->RestoreDirectory = true;
+		try
+		{
+			SaveFileDialog^ saveFileDialog = gcnew SaveFileDialog;
+			saveFileDialog->InitialDirectory = "$(ProjectDir)";
+			saveFileDialog->Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
+			//saveFileDialog->FilterIndex = 1;
+			saveFileDialog->RestoreDirectory = true;
 
-				 if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
-				 {
+			if (saveFileDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+			{
 
-					 float fx = (*m_proj_int)(0, 0);
-					 float fy = (*m_cam_int)(1, 1);
-					 m_fvoX = 2 * atan((m_options->m_nWidth*1.0f) / (2 * fx)) * 180.0 / CV_PI;
-					 m_fvoY = 2 * atan((m_options->m_nHeight*1.0f) / (2 * fy)) * 180.0 / CV_PI;
-					 System::String^ filename = saveFileDialog->FileName;
-					 System::IO::StreamWriter^ file = gcnew System::IO::StreamWriter(filename);
-					 file->WriteLine("MatJPV");
-					 //Write camera-int
-					 int sizeX = m_cam_int->GetNumCols();
-					 int sizeY = m_cam_int->GetNumRows();
-					 for (int i = 0; i < sizeX; i++)
-					 for (int j = 0; j < sizeY; j++)
-					 {
-						 file->Write((*m_cam_int)(i, j).ToString());
-						 file->Write(" ");
-					 }
-					 file->Write("\n");
-					 //Write camera-dist
-					 file->Write(m_cam_dist.ToString());
-					 file->Write("\n");
+				float fx = (*m_proj_int)(0, 0);
+				float fy = (*m_cam_int)(1, 1);
+				m_fvoX = 2 * atan((m_options->m_nWidth*1.0f) / (2 * fx)) * 180.0 / CV_PI;
+				m_fvoY = 2 * atan((m_options->m_nHeight*1.0f) / (2 * fy)) * 180.0 / CV_PI;
+				System::String^ filename = saveFileDialog->FileName;
+				System::IO::StreamWriter^ file = gcnew System::IO::StreamWriter(filename);
+				file->WriteLine("MatJPV");
+				//Write camera-int
+				int sizeX = m_cam_int->GetNumCols();
+				int sizeY = m_cam_int->GetNumRows();
+				for (int i = 0; i < sizeX; i++)
+					for (int j = 0; j < sizeY; j++)
+					{
+						file->Write((*m_cam_int)(i, j).ToString());
+						file->Write(" ");
+					}
+				file->Write("\n");
+				//Write camera-dist
+				file->Write(m_cam_dist.ToString());
+				file->Write("\n");
 
-					 //Write proj-int
-					 sizeX = m_proj_int->GetNumCols();
-					 sizeY = m_proj_int->GetNumRows();
-					 for (int i = 0; i < sizeX; i++)
-					 for (int j = 0; j < sizeY; j++)
-					 {
-						 file->Write((*m_proj_int)(i, j).ToString());
-						 file->Write(" ");
-					 }
-					 file->Write("\n");
-					 //Write proj-dist
-					 file->Write(m_proj_dist.ToString());
-					 file->Write("\n");
+				//Write proj-int
+				sizeX = m_proj_int->GetNumCols();
+				sizeY = m_proj_int->GetNumRows();
+				for (int i = 0; i < sizeX; i++)
+					for (int j = 0; j < sizeY; j++)
+					{
+						file->Write((*m_proj_int)(i, j).ToString());
+						file->Write(" ");
+					}
+				file->Write("\n");
+				//Write proj-dist
+				file->Write(m_proj_dist.ToString());
+				file->Write("\n");
 
-					 //Write proj-ext
-					 sizeX = m_proj_ext->GetNumCols();
-					 sizeY = m_proj_ext->GetNumRows();
-					 double data[12];
-					 memset(data, 0, 12);
-					 int a = 0;
-					 for (int r = 0; r < sizeY; r++)
-					 for (int c = 0; c < sizeX; c++)
-					 {
-						 data[a++] = (*m_proj_ext)(r, c);
-						 file->Write((*m_proj_ext)(r, c).ToString());
-						 file->Write(" ");
-					 }
-					 file->Close();
-					 Mat projMatrix = Mat(3, 4, CV_64FC1, data);
-					 Mat euler;
-					 Mat rodrigues;
-					 Mat trans, rotMatrix, x, y, z, cameraMatrix;
-					 decomposeProjectionMatrix(projMatrix, cameraMatrix, rotMatrix, trans, x, y, z, euler);
-					 //trans.at<double>(0, 0) /= trans.at<double>(3, 0);
-					 //trans.at<double>(1, 0) /= trans.at<double>(3, 0);
-					 //trans.at<double>(2, 0) /= trans.at<double>(3, 0);
-					 Rodrigues(rotMatrix, rodrigues);
-					 float ai = rodrigues.at<double>(0, 0);
-					 float bi = rodrigues.at<double>(1, 0);
-					 float ci = rodrigues.at<double>(2, 0);
-					 float di = sqrt(ai*ai + bi*bi + ci*ci);
-					 di = di * 180.0f / CV_PI;
-					 printf("Rod %f %f %f %f",ai,bi,ci,di);
-					 *m_mProjMatrix = cameraMatrix;
+				//Write proj-ext
+				sizeX = m_proj_ext->GetNumCols();
+				sizeY = m_proj_ext->GetNumRows();
+				double data[12];
+				memset(data, 0, 12);
+				int a = 0;
+				for (int r = 0; r < sizeY; r++)
+					for (int c = 0; c < sizeX; c++)
+					{
+						data[a++] = (*m_proj_ext)(r, c);
+						file->Write((*m_proj_ext)(r, c).ToString());
+						file->Write(" ");
+					}
+				file->Close();
+				Mat projMatrix = Mat(3, 4, CV_64FC1, data);
+				Mat euler;
+				Mat rodrigues;
+				Mat trans, rotMatrix, x, y, z, cameraMatrix;
+				decomposeProjectionMatrix(projMatrix, cameraMatrix, rotMatrix, trans, x, y, z, euler);
+				//trans.at<double>(0, 0) /= trans.at<double>(3, 0);
+				//trans.at<double>(1, 0) /= trans.at<double>(3, 0);
+				//trans.at<double>(2, 0) /= trans.at<double>(3, 0);
+				Rodrigues(rotMatrix, rodrigues);
+				float ai = rodrigues.at<double>(0, 0);
+				float bi = rodrigues.at<double>(1, 0);
+				float ci = rodrigues.at<double>(2, 0);
+				float di = sqrt(ai*ai + bi*bi + ci*ci);
+				di = di * 180.0f / CV_PI;
+				printf("Rod %f %f %f %f", ai, bi, ci, di);
+				*m_mProjMatrix = cameraMatrix;
 
-					 System::IO::StreamWriter^ file1 = gcnew System::IO::StreamWriter(filename->Remove(filename->Length - 4) + "-Ext.txt");
-					 file1->Write("position (in world units):\n");
-					 file1->Write("\tx: ");
-					 file1->Write(trans.at<double>(0, 0).ToString());
-					 file1->Write("\n");
-					 file1->Write("\ty: ");
-					 file1->Write(trans.at<double>(1, 0).ToString());
-					 file1->Write("\n");
-					 file1->Write("\tz: ");
-					 file1->Write(trans.at<double>(2, 0).ToString());
-					 file1->Write("\ntransform matrix (in world units):\n");
-					 file1->Write(rotMatrix.at<double>(0, 0).ToString());
-					 file1->Write("\n");
-					 file1->Write(rotMatrix.at<double>(1, 0).ToString());
-					 file1->Write("\n");
-					 file1->Write(rotMatrix.at<double>(2, 0).ToString());
-					 file1->Write("\n0\n");
-					 file1->Write(rotMatrix.at<double>(1, 0).ToString());
-					 file1->Write("\n");
-					 file1->Write(rotMatrix.at<double>(1, 1).ToString());
-					 file1->Write("\n");
-					 file1->Write(rotMatrix.at<double>(1, 2).ToString());
-					 file1->Write("\n0\n");
-					 file1->Write(rotMatrix.at<double>(2, 0).ToString());
-					 file1->Write("\n");
-					 file1->Write(rotMatrix.at<double>(2, 1).ToString());
-					 file1->Write("\n");
-					 file1->Write(rotMatrix.at<double>(2, 2).ToString());
-					 file1->Write("\n0\n");
-					 file1->Write(trans.at<double>(0, 0).ToString());
-					 file1->Write("\n");
-					 file1->Write(trans.at<double>(1, 0).ToString());
-					 file1->Write("\n");
-					 file1->Write(trans.at<double>(2, 0).ToString());
-					 file1->Write("\n");
-					 file1->Write(trans.at<double>(3, 0).ToString());
+				System::IO::StreamWriter^ file1 = gcnew System::IO::StreamWriter(filename->Remove(filename->Length - 4) + "-Ext.txt");
+				file1->Write("position (in world units):\n");
+				file1->Write("\tx: ");
+				file1->Write(trans.at<double>(0, 0).ToString());
+				file1->Write("\n");
+				file1->Write("\ty: ");
+				file1->Write(trans.at<double>(1, 0).ToString());
+				file1->Write("\n");
+				file1->Write("\tz: ");
+				file1->Write(trans.at<double>(2, 0).ToString());
+				file1->Write("\ntransform matrix (in world units):\n");
+				file1->Write(rotMatrix.at<double>(0, 0).ToString());
+				file1->Write("\n");
+				file1->Write(rotMatrix.at<double>(1, 0).ToString());
+				file1->Write("\n");
+				file1->Write(rotMatrix.at<double>(2, 0).ToString());
+				file1->Write("\n0\n");
+				file1->Write(rotMatrix.at<double>(1, 0).ToString());
+				file1->Write("\n");
+				file1->Write(rotMatrix.at<double>(1, 1).ToString());
+				file1->Write("\n");
+				file1->Write(rotMatrix.at<double>(1, 2).ToString());
+				file1->Write("\n0\n");
+				file1->Write(rotMatrix.at<double>(2, 0).ToString());
+				file1->Write("\n");
+				file1->Write(rotMatrix.at<double>(2, 1).ToString());
+				file1->Write("\n");
+				file1->Write(rotMatrix.at<double>(2, 2).ToString());
+				file1->Write("\n0\n");
+				file1->Write(trans.at<double>(0, 0).ToString());
+				file1->Write("\n");
+				file1->Write(trans.at<double>(1, 0).ToString());
+				file1->Write("\n");
+				file1->Write(trans.at<double>(2, 0).ToString());
+				file1->Write("\n");
+				file1->Write(trans.at<double>(3, 0).ToString());
 
-					 file1->Write("\naxis-angle rotation (in degrees):\n");
-					 file1->Write("\taxis x: ");
-					 file1->Write(ai.ToString());
-					 file1->Write("\n\taxis y: ");
-					 file1->Write(bi.ToString());
-					 file1->Write("\n\taxis z: ");
-					 file1->Write(ci.ToString());
-					 file1->Write("\n\tangle: ");
-					 file1->Write(di.ToString());
+				file1->Write("\naxis-angle rotation (in degrees):\n");
+				file1->Write("\taxis x: ");
+				file1->Write(ai.ToString());
+				file1->Write("\n\taxis y: ");
+				file1->Write(bi.ToString());
+				file1->Write("\n\taxis z: ");
+				file1->Write(ci.ToString());
+				file1->Write("\n\tangle: ");
+				file1->Write(di.ToString());
 
-					 file1->Write("\neuler rotation (in degrees):\n\tx: ");
-					 file1->Write(euler.at<double>(0, 0).ToString());
-					 file1->Write("\n\ty: ");
-					 file1->Write(euler.at<double>(1, 0).ToString());
-					 file1->Write("\n\tz: ");
-					 file1->Write(euler.at<double>(2, 0).ToString());
+				file1->Write("\neuler rotation (in degrees):\n\tx: ");
+				file1->Write(euler.at<double>(0, 0).ToString());
+				file1->Write("\n\ty: ");
+				file1->Write(euler.at<double>(1, 0).ToString());
+				file1->Write("\n\tz: ");
+				file1->Write(euler.at<double>(2, 0).ToString());
 
-					 file1->Write("\nfov (in degrees):\n\thorizontal: ");
-					 file1->Write(m_fvoX.ToString());
-					 file1->Write("\n\tvertical: ");
-					 file1->Write(m_fvoY.ToString());
+				file1->Write("\nfov (in degrees):\n\thorizontal: ");
+				file1->Write(m_fvoX.ToString());
+				file1->Write("\n\tvertical: ");
+				file1->Write(m_fvoY.ToString());
 
-					 file1->Write("\nprincipal point (in screen units):\n\tx: ");
-					 file1->Write((*m_proj_int)(0, 2).ToString());
-					 file1->Write("\n\ty: ");
-					 file1->Write((*m_proj_int)(1, 2).ToString());
+				file1->Write("\nprincipal point (in screen units):\n\tx: ");
+				file1->Write((*m_proj_int)(0, 2).ToString());
+				file1->Write("\n\ty: ");
+				file1->Write((*m_proj_int)(1, 2).ToString());
 
-					 file1->Write("\nimage size (in pixels):\n\tx: ");
-					 file1->Write((*m_proj_int)(0, 2).ToString());
-					 file1->Write("\n\ty: ");
-					 file1->Write((*m_proj_int)(1, 2).ToString());
- 
-					 file1->Write("\ncameraMatrix[");
-					 file1->Write((*m_proj_int)(0, 0).ToString());
-					 file1->Write(", ");
-					 file1->Write((*m_proj_int)(0, 1).ToString());
-					 file1->Write(", ");
-					 file1->Write((*m_proj_int)(0, 2).ToString());
-					 file1->Write(";\n ");
-					 file1->Write((*m_proj_int)(1, 0).ToString());
-					 file1->Write(", ");
-					 file1->Write((*m_proj_int)(1, 1).ToString());
-					 file1->Write(", ");
-					 file1->Write((*m_proj_int)(1, 2).ToString());
-					 file1->Write(";\n ");
-					 file1->Write((*m_proj_int)(2, 0).ToString());
-					 file1->Write(", ");
-					 file1->Write((*m_proj_int)(2, 1).ToString());
-					 file1->Write(", ");
-					 file1->Write((*m_proj_int)(2, 2).ToString());
-					 file1->Write(";\n ");
-					 file1->Close();
-					 
-				 }
+				file1->Write("\nimage size (in pixels):\n\tx: ");
+				file1->Write((*m_proj_int)(0, 2).ToString());
+				file1->Write("\n\ty: ");
+				file1->Write((*m_proj_int)(1, 2).ToString());
+
+				file1->Write("\ncameraMatrix[");
+				file1->Write((*m_proj_int)(0, 0).ToString());
+				file1->Write(", ");
+				file1->Write((*m_proj_int)(0, 1).ToString());
+				file1->Write(", ");
+				file1->Write((*m_proj_int)(0, 2).ToString());
+				file1->Write(";\n ");
+				file1->Write((*m_proj_int)(1, 0).ToString());
+				file1->Write(", ");
+				file1->Write((*m_proj_int)(1, 1).ToString());
+				file1->Write(", ");
+				file1->Write((*m_proj_int)(1, 2).ToString());
+				file1->Write(";\n ");
+				file1->Write((*m_proj_int)(2, 0).ToString());
+				file1->Write(", ");
+				file1->Write((*m_proj_int)(2, 1).ToString());
+				file1->Write(", ");
+				file1->Write((*m_proj_int)(2, 2).ToString());
+				file1->Write(";\n ");
+				file1->Close();
+
+			}
+		}
+		catch (exception& e)
+		{
+			printf("save calibration error: %s \n", e.what());
+		}
 	}
 
 	private: System::Void loadCalibrationMatricesToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e)
@@ -1295,9 +1316,10 @@ namespace calibrate {
 						 MessageBoxIcon::Error);
 					 return;
 				 }
-				 Mat b = m_decoder->m_mMask[1].clone();
+				 //Mat b = m_decoder->m_mMask[1].clone();
+				 Mat b = m_decoder->m_mMask[0].clone();
 				 slib::Field<2, float> m_mask;
-				 m_mask.Initialize(b.cols, m_decoder->m_mMask[1].rows);
+				 m_mask.Initialize(b.cols, b.rows);
 				 for (int i = 0; i < b.cols; i++)
 				 for (int j = 0; j < b.rows; j++)
 					 m_mask.cell(i, j) = b.at<ushort>(j, i);

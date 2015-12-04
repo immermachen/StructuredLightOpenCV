@@ -37,6 +37,9 @@ inline void normalize(
 		dst[i] = src[i] - center;
 		sum += GetNorm2(dst[i]);
 	}
+	//Yang: this formula: (sum/num)*scale = sqrt(2), 
+	//where (sum/num) is the average norm, then it should be scaled to norm =sqrt(2) that means x and y is 1;
+	//Also, just make the average norm circle small enough such that its radius is 1. 
 	scale = (float)num_data / sum * sqrt(double(nDimension));
 
 	for (int i=0; i<num_data; i++)

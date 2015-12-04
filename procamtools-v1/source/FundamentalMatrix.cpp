@@ -106,6 +106,8 @@ void EstimateFundamentalMatrixAlgebraic(
 	solve_algebraic_closed_form(matA, fundamental);
 
 	// cancel normalization
+	//Yang[TODO]: see third row of matS1 and colum of matS2, why different? Ok, just rotation for multiplication later. 
+	//wrong:??: I think, the scale should be inverser versin: 1/scale???
 	CMatrix<3,3,double> matS1 = make_matrix<double>(
 		scale1, 0, 0,
 		0, scale1, 0,

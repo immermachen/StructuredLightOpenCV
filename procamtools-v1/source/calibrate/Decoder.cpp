@@ -59,7 +59,7 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 			vector<Mat>::iterator begin = m_vCaptures.begin() + m_Info->m_nBasePatterns * 2;
 			vector<Mat>::iterator end = m_vCaptures.begin() + m_Info->m_nBasePatterns * 2 + m_Info->m_nNumFringes;
 			vector<Mat> phaseImgs(begin, end);
-			m_mPhaseMap[0] = DecodePhaseImages(phaseImgs, 0);
+			m_mPhaseMap[0] = DecodePhaseImages(phaseImgs, 0); //CV_32FC1
 			tmp = m_mPhaseMap[0].clone();  //CV_32FC1
 			tmp.convertTo(tmp, CV_8UC1, 255, 0);
 			temp.push_back(tmp);
@@ -204,8 +204,9 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 				if (!m_mMask[0].at<ushort>(x, y) && !m_mReliableMask[0].at<float>(x, y))
 				{
 					m_mReliableMask[0].at<ushort>(x, y) = 0;
-					m_mReliableMask[1].at<ushort>(x, y) = 0;
 				}
+		m_mMask[0] = m_mReliableMask[0]; // as the final Mask, do not care Mask[1]. s
+		m_mMask[1] = m_mReliableMask[0];
 	}
 
 #ifdef DebugImage
@@ -327,6 +328,17 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 	//cv::imwrite("m_mGray0_masked.bmp", m_mGray0);
 	//m_mGray1.convertTo(m_mGray1, CV_8UC1, 255 / maxVal, 0);
 	//cv::imwrite("m_mGray1_masked.bmp", m_mGray1);
+
+	//save the finale decoded Map and Mask
+	cv::FileStorage storage0("m_mGray0.yml", cv::FileStorage::WRITE);
+	storage0 << "m_mGray0" << m_mGray[0];
+	storage0.release();
+	cv::FileStorage storage1("m_mGray1.yml", cv::FileStorage::WRITE);
+	storage1 << "m_mGray1" << m_mGray[1];
+	storage1.release();
+	cv::FileStorage storage("m_mMask0.yml", cv::FileStorage::WRITE);
+	storage << "m_mMask0" << m_mMask[0];
+	storage.release();
 
 	return true;
 }

@@ -17,6 +17,8 @@
 #include "MyForm.h"
 using namespace calibrate;
 
+//Yang:  when you create a Windows Forms project; the IDE does below for you automatically.
+//In basic Windows Forms apps it's unlikely you'll ever need to even touch that file.
 [STAThreadAttribute]
 int __stdcall WinMain()
 {

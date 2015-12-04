@@ -49,13 +49,14 @@ void SingularValueDecomposition(const CMatrixType& mat, // in
 	//Yang: I will use vector instead of array pointer. Other people say: prefer to use vector. 
 	//double *a = new double [rows*cols]; // will be destroyed. Yang: why???[2803630 9], 	
 	int num = rows*cols;
-	std::vector<double> a(rows*cols,0.0);
+	//TRACE("Too large=%d ", num);
+	std::vector<double> a;// (rows*cols, 0.0);
 	//instead of using pointer, just copy data; 
 	//for (int i=0; i<rows*cols; i++) a[i] = *(mat.ptr()[i]);
 	for (int i = 0; i < rows; i++){
 		for (int j = 0; j < cols; j++)
 		{
-			a[i] = mat(i,j);
+			a.push_back(mat(i, j));
 		}
 	}
 
