@@ -294,21 +294,21 @@ bool CDecoder::Decode(float thres, vector<Mat>& vCaptures)
 		m_mGray[1] = m_mPhaseMap[1];
 	}
 
-	//tmp = m_mGray[0].clone();
-	//minMaxIdx(tmp, &minVal, &maxVal);
-	//cout << "m_mGray0 rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;	
-	//string filename = "m_mGray0.txt";
-	//CCapturador::writeMatToFile(tmp, filename.c_str(),0);
-	//tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
-	//cv::imwrite("m_mGray0.bmp", tmp);
+	tmp = m_mGray[0].clone();
+	minMaxIdx(tmp, &minVal, &maxVal);
+	std::cout << "m_mGray0 rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;	
+	string filename = "m_mGray0.txt";
+	CCapturador::writeMatToFile(tmp, filename.c_str(),0);
+	tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
+	cv::imwrite("m_mGray0.bmp", tmp);
 
-	//tmp = m_mGray[1].clone();
-	//minMaxIdx(tmp, &minVal, &maxVal);
-	//cout << "m_mGray1 rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
-	//filename = "m_mGray1.txt";
-	//CCapturador::writeMatToFile(tmp, filename.c_str(),1);	
-	//tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
-	//cv::imwrite("m_mGray1.bmp", tmp);
+	tmp = m_mGray[1].clone();
+	minMaxIdx(tmp, &minVal, &maxVal);
+	std::cout << "m_mGray1 rows=" << tmp.rows << ", cols=" << tmp.cols << ",minVal=" << minVal << ", maxVal=" << maxVal << endl;
+	filename = "m_mGray1.txt";
+	CCapturador::writeMatToFile(tmp, filename.c_str(),1);	
+	tmp.convertTo(tmp, CV_8UC1, 255 / maxVal, 0);
+	cv::imwrite("m_mGray1.bmp", tmp);
 
 	//cv::imwrite("m_mGrayError0.bmp", m_mGrayError[0]);
 	//cv::imwrite("m_mGrayError1.bmp", m_mGrayError[1]);
