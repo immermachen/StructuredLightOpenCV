@@ -46,19 +46,24 @@ void SingularValueDecomposition(const CMatrixType& mat, // in
 	int m = rows;
 	int n = cols;
 
-	//Yang: I will use vector instead of array pointer. Other people say: prefer to use vector. 
-	//double *a = new double [rows*cols]; // will be destroyed. Yang: why???[2803630 9], 	
-	int num = rows*cols;
-	//TRACE("Too large=%d ", num);
-	std::vector<double> a;// (rows*cols, 0.0);
-	//instead of using pointer, just copy data; 
-	//for (int i=0; i<rows*cols; i++) a[i] = *(mat.ptr()[i]);
-	for (int i = 0; i < rows; i++){
-		for (int j = 0; j < cols; j++)
-		{
-			a.push_back(mat(i, j));
-		}
-	}
+	//////////Yang: I will use vector instead of array pointer. Other people say: prefer to use vector. 
+	//////////double *a = new double [rows*cols]; // will be destroyed. Yang: why???[2803630 9], 	
+	////////int num = rows*cols;
+	//////////TRACE("Too large=%d ", num);
+	////////std::vector<double> a;// (rows*cols, 0.0);
+	//////////instead of using pointer, just copy data; 
+	//////////for (int i=0; i<rows*cols; i++) a[i] = mat.ptr()[i];
+	////////for (int i = 0; i < rows; i++){
+	////////	for (int j = 0; j < cols; j++)
+	////////	{
+	////////		a.push_back(mat(i, j));
+	////////	}
+	////////}
+
+	double *a = new double [rows*cols]; // will be destroyed. Yang: why???[2803630 9], 	
+	for (int i=0; i<rows*cols; i++) a[i] = mat.ptr()[i];
+
+
 
 	int lda = m;
 	double *s = new double [dim];
@@ -71,7 +76,7 @@ void SingularValueDecomposition(const CMatrixType& mat, // in
 	int lwork = std::max(3*std::min(m, n)+std::max(m, n), 5*std::min(m,n)); 
 	double *work = new double [lwork];
 	int info;
-	dgesvd(&jobu, &jobvt, &m, &n, a.data(), &lda, s, u, &ldu, vt, &ldvt, work, &lwork, &info);
+	dgesvd(&jobu, &jobvt, &m, &n, a, &lda, s, u, &ldu, vt, &ldvt, work, &lwork, &info);
 	if (info < 0)
 		TRACE("Error: %d-th parameter of DGESVD had an illegal value.\n", -info);
 	else if (info > 0)
