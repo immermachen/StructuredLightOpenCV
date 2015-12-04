@@ -1013,13 +1013,25 @@ namespace calibrate {
 	private: System::Void calibrateCameraProjectorToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e)
 	{
 		//Debug: read Gray Map and Mask;
-		cv::FileStorage storage0("m_mGray0.yml", cv::FileStorage::READ);
-		cv::FileStorage storage1("m_mGray1.yml", cv::FileStorage::READ);
-		cv::FileStorage storage("m_mMask0.yml", cv::FileStorage::READ);
-		storage0["m_mGray0"] >> m_decoder->m_mGray[0];
-		storage1["m_mGray1"] >> m_decoder->m_mGray[1];
-		storage["m_mMask0"] >> m_decoder->m_mMask[0];
+		if (m_options->m_nBasePatterns == 11)
+		{
+			cv::FileStorage storage0("m_mGray0.yml", cv::FileStorage::READ);
+			cv::FileStorage storage1("m_mGray1.yml", cv::FileStorage::READ);
+			cv::FileStorage storage("m_mMask0.yml", cv::FileStorage::READ);
+			storage0["m_mGray0"] >> m_decoder->m_mGray[0];
+			storage1["m_mGray1"] >> m_decoder->m_mGray[1];
+			storage["m_mMask0"] >> m_decoder->m_mMask[0];
+		}
+		else
+		{
 
+			cv::FileStorage storage0("m_mGray0 - example.yml", cv::FileStorage::READ);
+			cv::FileStorage storage1("m_mGray1 - example.yml", cv::FileStorage::READ);
+			cv::FileStorage storage("m_mMask0 - example.yml", cv::FileStorage::READ);
+			storage0["m_mGray0"] >> m_decoder->m_mGray[0];
+			storage1["m_mGray1"] >> m_decoder->m_mGray[1];
+			storage["m_mMask0"] >> m_decoder->m_mMask[0];
+		}
 
 				 if (m_decoder->m_mGray[0].empty())
 				 {
