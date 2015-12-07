@@ -85,12 +85,35 @@ bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool use
 		imshow("Patrones", m_vPatterns[i]);
 		cvWaitKey(100);//Yang
 
+		//Yang:-------capture some images, then select the highest intensity image as the final image. -------
+		int numFrames = 50;
 		CameraFrame camframe;
 		//m_VideoCapture >> frame;
 		camframe = camera->getFrame();
 		Mat frame(camframe.height, camframe.width,CV_8UC1, camframe.memory);
 		frame = frame.clone();
-
+		cv::Scalar m = cv::mean(frame);
+		double maxVal = m[0];
+		std::cout << "To compare "<< maxVal << " with -->";
+		for (int i = 0; i < numFrames; i++)
+		{
+			CameraFrame curframe;
+			curframe = camera->getFrame();
+			Mat newframe(camframe.height, camframe.width, CV_8UC1, camframe.memory);
+			newframe = newframe.clone();
+			cv::Scalar curMean = cv::mean(newframe);
+			double curM = curMean[0];
+			std::cout << curM << ", ";
+			if (curM > maxVal)
+			{
+				frame = newframe;
+			}
+		}
+		m = cv::mean(frame);
+		maxVal = m[0];
+		std::cout << "Find the highest Intensity image: maxVal = " << maxVal << std::endl;
+		//-----------------------------
+		
 		//B = GetTickCount();
 		//int C = B - A;
 		//if (C>time || waitKey(30) >= 0)
