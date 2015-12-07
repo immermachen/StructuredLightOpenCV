@@ -94,7 +94,7 @@ bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool use
 		frame = frame.clone();
 		cv::Scalar m = cv::mean(frame);
 		double maxVal = m[0];
-		std::cout << "To compare "<< maxVal << " with -->";
+		std::cout << "To compare "<< maxVal << " with -->" <<std::endl;
 		for (int i = 0; i < numFrames; i++)
 		{
 			CameraFrame curframe;
@@ -109,6 +109,7 @@ bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool use
 				frame = newframe;
 			}
 		}
+		std::cout << ". " << std::endl;
 		m = cv::mean(frame);
 		maxVal = m[0];
 		std::cout << "Find the highest Intensity image: maxVal = " << maxVal << std::endl;
