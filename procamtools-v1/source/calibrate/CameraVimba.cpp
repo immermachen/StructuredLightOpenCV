@@ -32,7 +32,7 @@ CameraFrame CameraVimba::getFrame(){
 	err = m_pCamera->AcquireSingleImage(pFrame, delay);//timeout=5000:The time to wait until the frame got filled
 
 	if (err != VmbErrorSuccess) {
-		std::cout << "AcquireSingleImage err=" << ErrorCodeToMessage(err).c_str() << std::endl;
+		std::cout << "Oh! No! Please close GigEView! AcquireSingleImage err=" << ErrorCodeToMessage(err).c_str() << std::endl;
 		return frame;
 	}
 
@@ -105,7 +105,7 @@ CameraFrame CameraVimba::getFrame(){
 	frame.memory = pBitmapBuffer;
 
 
-	std::cout << "getFrame --> GetFrame-->End. size=" << frame.sizeBytes << ", Height=" << frame.height << ", width=" << frame.width << ", stamp=" << stamp << std::endl;
+	//std::cout << "getFrame --> GetFrame-->End. size=" << frame.sizeBytes << ", Height=" << frame.height << ", width=" << frame.width << ", stamp=" << stamp << std::endl;
 
 
 	return frame;
