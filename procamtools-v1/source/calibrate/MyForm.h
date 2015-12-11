@@ -704,7 +704,7 @@ namespace calibrate {
 
 			m_decoder->m_Info->m_bComplementary = true;
 			int thress = 25 * comboBoxThress->SelectedIndex;
-			bool captura = m_decoder->Decode(thress, m_Cap->m_vCaptures);
+			bool captura = m_decoder->Decode(thress, m_Cap->m_vCaptures[0]);
 			if (captura)
 			{
 				Mat b;
@@ -872,7 +872,7 @@ namespace calibrate {
 						 for (int i = 0; i < delimitador->Length; i++)
 							 ruta2 += delimitador[i];
 						 m_Cap->m_vCaptures.push_back(m_Cap->m_mTextura);
-						 m_Cap->SerializeCaptures(m_Cap->m_vCaptures, ruta2);
+						 m_Cap->SerializeCaptures(m_Cap->m_vCaptures[0], ruta2);
 						 m_Cap->m_vCaptures.pop_back();
 					 }
 				 }
@@ -895,10 +895,11 @@ namespace calibrate {
 				 ////////////////////}
 				 m_bCapturating = true;
 				 bool captura = m_Cap->CapturePatterns(Convert::ToDouble(textBoxTime->Text), 0, Convert::ToInt32(textBoxProyX->Text), Convert::ToInt32(textBoxProyY->Text), true);
+
 				 m_bCapturating = false;
 				 if (captura)
 				 {
-					 UpdateDispaly();
+					 //UpdateDispaly();  //Yang: Now i just need to do capture!!!!!
 				 }
 				 captureToolStripMenuItem->Enabled = true;
 
@@ -1346,7 +1347,8 @@ namespace calibrate {
 				 //if (m_Cap->m_VideoCapture.isOpened())
 					// m_Cap->m_VideoCapture.release();
 		//if (m_Cap->camera->isCapturing)
-			m_Cap->camera->stopCapture();
+		
+		//	m_Cap->camera->stopCapture();
 
 	}
 	private: System::Void exportAsOBJToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e)

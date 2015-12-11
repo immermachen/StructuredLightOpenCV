@@ -128,12 +128,9 @@ bool CameraVimba::Init(unsigned int camNum){
 
 			if (cameras.size() > 0) {
 				if (cameras.size() > 1) {
-					std::cout << "Cameras found: " << cameras.size();  // should also implement Qinputdialog to let the user choose which one to use
+					std::cout << cameras.size() << " Cameras founded!" << std::endl;  // should also implement Qinputdialog to let the user choose which one to use
 					for (unsigned int i = 0; i < cameras.size(); i++) {
 						CameraPtr cam = cameras[i];
-						std::string namestr;
-						err = cam->GetName(namestr);
-						std::cout << "Next Camera is: " << namestr;
 					}
 				}
 
@@ -141,16 +138,16 @@ bool CameraVimba::Init(unsigned int camNum){
 				m_pCamera = cameras[camNum];
 				std::string camID;
 				std::string namestr;
-				err = m_pCamera->GetName(namestr);
+				err = m_pCamera->GetSerialNumber(namestr);
 				err = m_pCamera->GetID(camID);
 				if (VmbErrorSuccess == err)    {
-					std::cout << "Opening camera " << namestr;
+					std::cout << "Opening camera: " << namestr;
 
 					err = m_pCamera->Open(VmbAccessModeFull);
 
 					if (err == VmbErrorSuccess) {
 						//camera successfully opened. Now do some camera initialisation steps
-						std::cout << "camera successfully opened";
+						std::cout << ", ..... successfully opened"<<std::endl;
 
 						// Set the GeV packet size to the highest possible value
 						// (In this example we do not test whether this cam actually is a GigE cam)
@@ -182,13 +179,9 @@ bool CameraVimba::Init(unsigned int camNum){
 						settings.shutter = 16.66;
 						settings.gain = 0.0;
 						this->setCameraSettings(settings);
-
-
-						std::cout << "camera successfully opened --> Set/Get finished!";
-
 					}
 					else {
-						std::cout << "camera did not open successfully";
+						std::cout << ", did not open successfully!" << std::endl;
 						return false;
 					}
 				}
@@ -211,9 +204,6 @@ bool CameraVimba::Init(unsigned int camNum){
 		std::cout << "Could not start system. Error code: " << err;
 		return false;
 	}
-
-
-	std::cout << "Init --> End  ";
 	return true;
 }
 

@@ -6,7 +6,7 @@
 std::vector< std::vector<CameraInfo> > VirtualCamera::GetInterfaceCameraList(){
 	std::vector< std::vector<CameraInfo> > ret;
 	std::vector<CameraInfo> vimbacameras = CameraVimba::getCameraList();
-	std::cout << "GetInterfaceCameraList-->WITH_CAMERAVIMBA" << vimbacameras.size() << std::endl;
+	std::cout << "GetInterfaceCameraList-->WITH_CAMERAVIMBA: " << vimbacameras.size() << std::endl;
 	ret.push_back(vimbacameras);
 	return ret;
 }

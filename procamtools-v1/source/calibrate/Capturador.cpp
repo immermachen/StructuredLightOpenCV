@@ -29,7 +29,12 @@ CCapturador::CCapturador(COptions* opt, string ruta) :  m_Options(opt)
 	
 
 	// Initialize camera
-	camera = VirtualCamera::NewCamera(0, 0, triggerModeSoftware);
+	std::vector< std::vector<CameraInfo> > cams = VirtualCamera::GetInterfaceCameraList();
+	m_vCaptures.resize(2);
+	for (int i = 0; i < cams[0].size(); i++)
+	{
+		camera.push_back(VirtualCamera::NewCamera(0, i, triggerModeSoftware));
+	}
 }
 
 bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool useComp)
@@ -48,9 +53,15 @@ bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool use
 		std::cout << "Yang:CCapturador-->Load pattern:" << temp << std::endl;
 		oss.clear();
 	}
+	
+	for (int i = 0; i < camera.size();i++)
+	{
+		if (!m_vCaptures[i].empty())
+			m_vCaptures[i].clear();
+		//camera[i]->stopCapture();
+	}
+	
 
-	m_vCaptures.clear();	
-	camera->startCapture();
 	bool bMakeCapture = false;
 	int nPatterns = 0;
 	namedWindow("Patrones");
@@ -75,88 +86,58 @@ bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool use
 	SetWindowLong(win_handle, GWL_STYLE, GetWindowLong(win_handle, GWL_EXSTYLE) | WS_EX_TOPMOST);
 	ShowWindow(win_handle, SW_SHOW);
 	cvMoveWindow("Patrones", posX, posY);
-	cvWaitKey(2000);
-	auto A = GetTickCount();
-	auto B = GetTickCount();
-	for (int i = 0;;)
+	cvWaitKey(2000); 
+
+	for (int i = 0; i < m_nPatterns;i++)
 	{
 		cvWaitKey(time);
 
 		imshow("Patrones", m_vPatterns[i]);
 		cvWaitKey(100);//Yang
 
-		//Yang:-------capture some images, then select the highest intensity image as the final image. -------
-		int numFrames = 5;
-		CameraFrame camframe;
-		//m_VideoCapture >> frame;
-		camframe = camera->getFrame();
-		Mat frame(camframe.height, camframe.width,CV_8UC1, camframe.memory);
-		frame = frame.clone();
-		////////cv::Scalar m = cv::mean(frame);
-		////////double maxVal = m[0];
-		////////std::cout << "To compare "<< maxVal << " with -->" <<std::endl;
-		////////for (int i = 0; i < numFrames; i++)
-		////////{
-		////////	//cvWaitKey(100);//Yang
-		////////	CameraFrame curframe;
-		////////	curframe = camera->getFrame();
-		////////	Mat newframe(camframe.height, camframe.width, CV_8UC1, camframe.memory);
-		////////	newframe = newframe.clone();
-		////////	cv::Scalar curMean = cv::mean(newframe);
-		////////	double curM = curMean[0];
-		////////	std::cout << curM << ", ";
-		////////	if (curM > maxVal)
-		////////	{
-		////////		frame = newframe;
-		////////	}
-		////////}
-		////////std::cout << ". " << std::endl;
-		////////m = cv::mean(frame);
-		////////maxVal = m[0];
-		////////std::cout << "Find the highest Intensity image: maxVal = " << maxVal << std::endl;
-		//-----------------------------
-		
-		//B = GetTickCount();
-		//int C = B - A;
-		//if (C>time || waitKey(30) >= 0)
-		//{
+		for (int c = 0; c < camera.size(); c++)
+		{
+			CameraFrame camframe;
+			camframe = camera[c]->getFrame();
+			Mat frame(camframe.height, camframe.width, CV_8UC1, camframe.memory);
+			frame = frame.clone();
+
 			if (!frame.empty())
-			if (useComp)
 			{
-				i++;
-				//Mat capture = frame.clone();
-				Mat gray = frame; // capture;
-				//cv::cvtColor(capture, gray, CV_BGR2GRAY);
-				m_vCaptures.push_back(gray);
-				if (++nPatterns >= m_nPatterns)
+				if (useComp)
 				{
-					m_mTextura = frame.clone();
-					break;
+					std::cout << "Pattern Capturing:" << i << "-" << c << std::endl;
+					m_vCaptures[c].push_back(frame);
 				}
-					
+				else
+				{
+					//i += 2;
+					//Mat capture = frame.clone();
+					//Mat gray;
+					//cv::cvtColor(capture, gray, CV_BGR2GRAY);
+					//m_vCaptures.push_back(gray);
+					//nPatterns += 2;
+					//if (nPatterns >= m_nPatterns)
+					//	break;
+				}
 			}
-			else
-			{
-				i += 2;
-				Mat capture = frame.clone();
-				Mat gray;
-				cv::cvtColor(capture, gray, CV_BGR2GRAY);
-				m_vCaptures.push_back(gray);
-				nPatterns += 2;
-				if (nPatterns >= m_nPatterns)
-					break;
-			}
-			else
+			else{
 				printf("Error: no caputure info.\n");
-		//	A = GetTickCount();
-		//};
+			}
+		}
+
 	}
-	std::cout << "Pattern Captured." << std::endl;
+	std::cout << "Pattern Captured Finished!" << std::endl;
 	cvDestroyWindow("Patrones");
 	//cvDestroyWindow("Camera");
-	SerializeCapturesDefault(m_vCaptures, "aVi");
-	camera->stopCapture();
-	
+
+	for (int c = 0; c < camera.size(); c++)
+	{
+		std::stringstream oss;
+		oss << "aCam" << c+1;
+		SerializeCapturesDefault(m_vCaptures[c], oss.str());
+		camera[c]->stopCapture();
+	}
 	return true;
 }
 
@@ -376,31 +357,31 @@ bool CCapturador::LoadCapturesFromFilesUndisorted(string ruta,Mat& CameraMatrix,
 bool CCapturador::tryCamera(int device)
 {
 	
-	//////if (!m_VideoCapture.isOpened())  // check if we succeeded
-	//////	m_VideoCapture = VideoCapture(device);
-	//////if (!m_VideoCapture.isOpened())
-	//////	return false;
+	//////////////if (!m_VideoCapture.isOpened())  // check if we succeeded
+	//////////////	m_VideoCapture = VideoCapture(device);
+	//////////////if (!m_VideoCapture.isOpened())
+	//////////////	return false;
 
 
-	camera->startCapture();
-	//if (!camera->isCapturing)
-	//	return false;
+	////////camera->startCapture();
+	//////////if (!camera->isCapturing)
+	//////////	return false;
 
 
-	char key = 0;
-	Mat frame;
-	while (key==-1||key==0)
-	{
-		//m_VideoCapture >> frame;
-		CameraFrame camFrame = camera->getFrame();
-		Mat curFrame(camFrame.height, camFrame.height, CV_8U, camFrame.memory);
-		frame = curFrame.clone();
+	////////char key = 0;
+	////////Mat frame;
+	////////while (key==-1||key==0)
+	////////{
+	////////	//m_VideoCapture >> frame;
+	////////	CameraFrame camFrame = camera->getFrame();
+	////////	Mat curFrame(camFrame.height, camFrame.height, CV_8U, camFrame.memory);
+	////////	frame = curFrame.clone();
 
-		if (!frame.empty())
-			imshow("Camara", frame);
-		key = cvWaitKey(30);
-	}
-	cvvDestroyWindow("Camara");
+	////////	if (!frame.empty())
+	////////		imshow("Camara", frame);
+	////////	key = cvWaitKey(30);
+	////////}
+	////////cvvDestroyWindow("Camara");
 
 	return true;
 }
