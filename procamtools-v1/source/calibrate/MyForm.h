@@ -94,6 +94,7 @@ namespace calibrate {
 	private: System::Windows::Forms::ComboBox^  comboBoxThress;
 	private: System::Windows::Forms::ToolStripMenuItem^  view3DModelToolStripMenuItem;
 	private: System::Windows::Forms::CheckBox^  checkBoxPhase;
+	private: System::Windows::Forms::ToolStripMenuItem^  gammaCorrectionToolStripMenuItem;
 
 
 
@@ -148,7 +149,6 @@ namespace calibrate {
 		/// </summary>
 		void InitializeComponent(void)
 		{
-			System::ComponentModel::ComponentResourceManager^  resources = (gcnew System::ComponentModel::ComponentResourceManager(MyForm::typeid));
 			this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
 			this->structuredLightToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->loadCapturesToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -184,6 +184,7 @@ namespace calibrate {
 			this->label6 = (gcnew System::Windows::Forms::Label());
 			this->label5 = (gcnew System::Windows::Forms::Label());
 			this->textBoxTime = (gcnew System::Windows::Forms::TextBox());
+			this->checkBoxPhase = (gcnew System::Windows::Forms::CheckBox());
 			this->checkBoxComplementary = (gcnew System::Windows::Forms::CheckBox());
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->label2 = (gcnew System::Windows::Forms::Label());
@@ -193,7 +194,7 @@ namespace calibrate {
 			this->progressBar1 = (gcnew System::Windows::Forms::ProgressBar());
 			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->labelProggres = (gcnew System::Windows::Forms::Label());
-			this->checkBoxPhase = (gcnew System::Windows::Forms::CheckBox());
+			this->gammaCorrectionToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->menuStrip1->SuspendLayout();
 			this->tabControl1->SuspendLayout();
 			this->tabPage1->SuspendLayout();
@@ -231,7 +232,7 @@ namespace calibrate {
 			// loadCapturesToolStripMenuItem
 			// 
 			this->loadCapturesToolStripMenuItem->Name = L"loadCapturesToolStripMenuItem";
-			this->loadCapturesToolStripMenuItem->Size = System::Drawing::Size(150, 22);
+			this->loadCapturesToolStripMenuItem->Size = System::Drawing::Size(152, 22);
 			this->loadCapturesToolStripMenuItem->Text = L"Load Captures";
 			// 
 			// calibrateToolStripMenuItem
@@ -298,9 +299,9 @@ namespace calibrate {
 			// 
 			// captureToolStripMenuItem
 			// 
-			this->captureToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {
+			this->captureToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(5) {
 				this->loadCapturesToolStripMenuItem1,
-					this->saveCapturesToolStripMenuItem, this->testWebcamToolStripMenuItem, this->startCaptureToolStripMenuItem
+					this->saveCapturesToolStripMenuItem, this->testWebcamToolStripMenuItem, this->startCaptureToolStripMenuItem, this->gammaCorrectionToolStripMenuItem
 			});
 			this->captureToolStripMenuItem->Name = L"captureToolStripMenuItem";
 			this->captureToolStripMenuItem->Size = System::Drawing::Size(61, 20);
@@ -309,28 +310,28 @@ namespace calibrate {
 			// loadCapturesToolStripMenuItem1
 			// 
 			this->loadCapturesToolStripMenuItem1->Name = L"loadCapturesToolStripMenuItem1";
-			this->loadCapturesToolStripMenuItem1->Size = System::Drawing::Size(150, 22);
+			this->loadCapturesToolStripMenuItem1->Size = System::Drawing::Size(175, 22);
 			this->loadCapturesToolStripMenuItem1->Text = L"Load Captures";
 			this->loadCapturesToolStripMenuItem1->Click += gcnew System::EventHandler(this, &MyForm::loadCapturesToolStripMenuItem1_Click);
 			// 
 			// saveCapturesToolStripMenuItem
 			// 
 			this->saveCapturesToolStripMenuItem->Name = L"saveCapturesToolStripMenuItem";
-			this->saveCapturesToolStripMenuItem->Size = System::Drawing::Size(150, 22);
+			this->saveCapturesToolStripMenuItem->Size = System::Drawing::Size(175, 22);
 			this->saveCapturesToolStripMenuItem->Text = L"Save Captures";
 			this->saveCapturesToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::saveCapturesToolStripMenuItem_Click);
 			// 
 			// testWebcamToolStripMenuItem
 			// 
 			this->testWebcamToolStripMenuItem->Name = L"testWebcamToolStripMenuItem";
-			this->testWebcamToolStripMenuItem->Size = System::Drawing::Size(150, 22);
+			this->testWebcamToolStripMenuItem->Size = System::Drawing::Size(175, 22);
 			this->testWebcamToolStripMenuItem->Text = L"Test Webcam";
 			this->testWebcamToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::testWebcamToolStripMenuItem_Click);
 			// 
 			// startCaptureToolStripMenuItem
 			// 
 			this->startCaptureToolStripMenuItem->Name = L"startCaptureToolStripMenuItem";
-			this->startCaptureToolStripMenuItem->Size = System::Drawing::Size(150, 22);
+			this->startCaptureToolStripMenuItem->Size = System::Drawing::Size(175, 22);
 			this->startCaptureToolStripMenuItem->Text = L"Start Capture";
 			this->startCaptureToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::startCaptureToolStripMenuItem_Click);
 			// 
@@ -524,6 +525,18 @@ namespace calibrate {
 			this->textBoxTime->TabIndex = 6;
 			this->textBoxTime->Text = L"500";
 			// 
+			// checkBoxPhase
+			// 
+			this->checkBoxPhase->AutoSize = true;
+			this->checkBoxPhase->Checked = true;
+			this->checkBoxPhase->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->checkBoxPhase->Location = System::Drawing::Point(13, 139);
+			this->checkBoxPhase->Name = L"checkBoxPhase";
+			this->checkBoxPhase->Size = System::Drawing::Size(141, 17);
+			this->checkBoxPhase->TabIndex = 5;
+			this->checkBoxPhase->Text = L"Use PhaseShift Patterns";
+			this->checkBoxPhase->UseVisualStyleBackColor = true;
+			// 
 			// checkBoxComplementary
 			// 
 			this->checkBoxComplementary->AutoSize = true;
@@ -605,17 +618,12 @@ namespace calibrate {
 			this->labelProggres->Size = System::Drawing::Size(0, 13);
 			this->labelProggres->TabIndex = 7;
 			// 
-			// checkBoxPhase
+			// gammaCorrectionToolStripMenuItem
 			// 
-			this->checkBoxPhase->AutoSize = true;
-			this->checkBoxPhase->Checked = true;
-			this->checkBoxPhase->CheckState = System::Windows::Forms::CheckState::Checked;
-			this->checkBoxPhase->Location = System::Drawing::Point(13, 139);
-			this->checkBoxPhase->Name = L"checkBoxPhase";
-			this->checkBoxPhase->Size = System::Drawing::Size(141, 17);
-			this->checkBoxPhase->TabIndex = 5;
-			this->checkBoxPhase->Text = L"Use PhaseShift Patterns";
-			this->checkBoxPhase->UseVisualStyleBackColor = true;
+			this->gammaCorrectionToolStripMenuItem->Name = L"gammaCorrectionToolStripMenuItem";
+			this->gammaCorrectionToolStripMenuItem->Size = System::Drawing::Size(175, 22);
+			this->gammaCorrectionToolStripMenuItem->Text = L"Gamma Correction";
+			this->gammaCorrectionToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::gammaCorrectionToolStripMenuItem_Click);
 			// 
 			// MyForm
 			// 
@@ -1415,5 +1423,8 @@ namespace calibrate {
 	{
 		UpdateDispaly();
 	}
-	};
+	private: System::Void gammaCorrectionToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {		
+		bool captura = m_Cap->GammaCorrection(Convert::ToDouble(textBoxTime->Text), 0, Convert::ToInt32(textBoxProyX->Text), Convert::ToInt32(textBoxProyY->Text));
+	}
+};
 }

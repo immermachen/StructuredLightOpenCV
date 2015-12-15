@@ -37,6 +37,74 @@ CCapturador::CCapturador(COptions* opt, string ruta) :  m_Options(opt)
 	}
 }
 
+
+bool CCapturador::GammaCorrection(int time, int device, int posX, int posY)
+{
+	std::cout << "Yang:GammaCorrection-->Load pattern m_nPatterns=" << m_nPatterns << std::endl;
+	
+	//--------set patterns window---------------------------------------------------------------------------------
+	cv::namedWindow("Patrones");
+	HWND win_handle = FindWindowA(0, "Patrones");
+	if (!win_handle)
+	{
+		std::printf("Failed FindWindow\n");
+	}
+	// Resize
+	unsigned int flags = (SWP_SHOWWINDOW | SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER);
+	flags &= ~SWP_NOSIZE;
+	unsigned int x = posX;
+	unsigned int y = posY;
+	std::printf("x = %d y = %d", x, y);
+	unsigned int w = m_Options->m_nWidth;
+	unsigned int h = m_Options->m_nHeight;
+	SetWindowPos(win_handle, HWND_TOP, x, y, w, h, flags);
+	// Borderless
+	SetWindowLong(win_handle, GWL_STYLE, GetWindowLong(win_handle, GWL_EXSTYLE) | WS_EX_TOPMOST);
+	ShowWindow(win_handle, SW_SHOW);
+	cvMoveWindow("Patrones", posX, posY);
+	cvWaitKey(2000);
+	//--------set patterns window------------------------------------------------------------------------
+
+	Mat response = Mat::zeros(1, 256, CV_32FC1);
+	Mat pattern = Mat::ones(m_Options->m_nHeight, m_Options->m_nWidth, CV_8UC1);
+
+	int c = 0;
+	for (int i = 0; i < 256; i++)
+	{
+		cvWaitKey(time);		
+
+		pattern = i;
+
+		imshow("Patrones", pattern);
+		cvWaitKey(100);
+
+		CameraFrame camframe;
+		camframe = camera[c]->getFrame();
+		Mat frame(camframe.height, camframe.width, CV_8UC1, camframe.memory);
+		frame = frame.clone();
+		cv::Scalar m = cv::mean(frame);
+		double mean = m[0];
+
+		if (!frame.empty())
+		{			
+			response.at<double>(0, i) = mean;
+			std::cout << "Capturing:" << i << "-" << c << ",  Mean=" << response.at<double>(0, i) << std::endl;
+		}
+		else{
+			std::cout<<"Error: no caputure info."<<std::endl;
+		}
+	}
+
+	cvDestroyWindow("Patrones");
+
+	//write
+	writeMatToFile(response,"response.txt", -1);
+	//camera[c]->stopCapture();
+	std::cout << "Finished!" << std::endl;
+	return true;
+}
+
+
 bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool useComp)
 {
 	std::cout << "Yang:CCapturador-->Load pattern m_nPatterns=" << m_nPatterns << std::endl;
@@ -270,6 +338,7 @@ string CCapturador::SerializeCapturesDefault(vector<Mat> imagenes, string str)
 	return oss3.str();
 }
 
+//0: horizontal; 1: vertical; -1: whole image;
 void CCapturador::writeMatToFile(cv::Mat& m, const char* filename, int dir)
 {
 	ofstream fout(filename);
@@ -289,11 +358,22 @@ void CCapturador::writeMatToFile(cv::Mat& m, const char* filename, int dir)
 			fout << endl;
 		}
 	}
-	else
+	else if (dir==1)
 	{
 		for (int j = m.cols / 2 +50; j < m.cols / 2 + 70; j++)
 		{
 			for (int i = 0; i < m.rows; i++)
+			{
+				fout << m.at<double>(i, j) << "\t";
+			}
+			fout << endl;
+		}
+	}
+	else if (dir == -1) // direct save the whole image
+	{
+		for (int i = 0; i < m.rows; i++)
+		{
+			for (int j = 0; j < m.cols; j++)
 			{
 				fout << m.at<double>(i, j) << "\t";
 			}

@@ -236,10 +236,15 @@ void CameraVimba::startCapture(){
 
 
 void CameraVimba::stopCapture(){
-	VmbErrorType err = m_system.Shutdown();
-	if (err != VmbErrorSuccess) {
-		std::cout << "Problem closing the camera";
+	try
+	{
+		VmbErrorType err = m_system.Shutdown();
+		if (err != VmbErrorSuccess) {
+			std::cout << "Problem closing the camera";
+		}
+
 	}
+	catch (exception ex){}
 	capturing = false;
 }
 
