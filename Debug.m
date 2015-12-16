@@ -189,8 +189,14 @@ hp2 = hp2(10,x);
 hp3 = hp3(10,x);
 hp4 = hp4(10,x);
 
+%Calculate modulation of four phase shift: 
+V = sqrt(double((hp4-hp2).^2+(hp1-hp3).^2))
+
 figure;
 hold on;
+plot(x,V,'k-');
+plot(x,V,'k*');
+
 plot(x,hp1,'r-');
 plot(x,hp1,'b.');
 
