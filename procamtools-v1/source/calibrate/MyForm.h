@@ -664,6 +664,8 @@ namespace calibrate {
 #pragma endregion
 	private: System::Void MyForm_Load(System::Object^  sender, System::EventArgs^  e)
 	{
+
+
 		string ruta;
 		m_options = new COptions("options.ini");
 
@@ -1424,7 +1426,87 @@ namespace calibrate {
 		UpdateDispaly();
 	}
 	private: System::Void gammaCorrectionToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {		
-		bool captura = m_Cap->GammaCorrection(Convert::ToDouble(textBoxTime->Text), 0, Convert::ToInt32(textBoxProyX->Text), Convert::ToInt32(textBoxProyY->Text));
+		//bool captura = m_Cap->GammaCorrection(Convert::ToDouble(textBoxTime->Text), 0, Convert::ToInt32(textBoxProyX->Text), Convert::ToInt32(textBoxProyY->Text));
+
+
+		options_t* opt = new options_t();
+		opt->load("options.ini");
+		int H = 2050;// opt->projector_height;
+		int W = 2448;// opt->projector_width;
+
+		//Loop all captured images
+		for (int d = 1; d <= 1; d++)
+		{
+
+			std::ostringstream outdir;
+			outdir << "D:/Journey-HackTheCity/procamtools-v1/Release/decoded/" << d;
+
+			slib::Field<2, float> horizontal(outdir.str() + "h.map");
+			slib::Field<2, float> vertical(outdir.str() + "v.map");
+			slib::Field<2, float> h_modul(outdir.str() + "h-modulation.map");
+			slib::Field<2, float> v_modul(outdir.str() + "v-modulation.map");
+
+			slib::Field<2, float> mask;
+			slib::image::Read(mask, outdir.str() + "mask.bmp");
+			slib::Field<2, float> reliablemask;
+			slib::image::Read(reliablemask, outdir.str() + "reliable.bmp");
+
+			const CVector<2, int>& size = mask.size();
+			//H = size[0];
+			//W = size[1];
+			//std::cout << H << " " << W << std::endl;
+
+			Mat h = Mat::zeros(H,W, CV_32FC1);
+			Mat v = Mat::zeros(H, W, CV_32FC1);
+			Mat h_modulation = Mat::zeros(H, W, CV_32FC1);
+			Mat v_modulation = Mat::zeros(H, W, CV_32FC1);
+
+			Mat maskcv = Mat::zeros(H, W, CV_8UC1);
+			Mat reliablecv = Mat::zeros(H, W, CV_8UC1);
+
+			//convertion
+			for (int x = 0; x < H; x++)
+			{
+				for (int y = 0; y < W; y++)
+				{
+					//std::cout << mask.cell(x, y);
+					 maskcv.at<unsigned char>(x, y) = mask.cell(y, x)*255; // col, row //note:: scale 
+					 reliablecv.at<unsigned char>(x, y) = reliablemask.cell(y,x)*255;
+
+					 h.at<float>(x, y) = horizontal.cell(y, x);
+					 v.at<float>(x, y) = vertical.cell(y, x);
+					 h_modulation.at<float>(x, y) = h_modul.cell(y, x);
+					 v_modulation.at<float>(x, y) = v_modul.cell(y, x);
+
+				}
+			}
+
+			//write
+			cv::imwrite(outdir.str() + "mask_cv.bmp", maskcv);			
+			cv::imwrite(outdir.str() + "reliable_cv.bmp", reliablecv);
+
+			//save the finale decoded Map and Mask
+			cv::FileStorage storage0(outdir.str() + "h.yml", cv::FileStorage::WRITE);			
+			storage0 << "h" << h;
+			storage0.release();
+
+			cv::FileStorage storage1(outdir.str() + "v.yml", cv::FileStorage::WRITE);
+			storage1 << "v" << v;
+			storage1.release();
+
+			cv::FileStorage storage2(outdir.str() + "h_modul.yml", cv::FileStorage::WRITE);
+			storage2 << "h_modul" << h_modulation;
+			storage2.release();
+
+			cv::FileStorage storage3(outdir.str() + "v_modul.yml", cv::FileStorage::WRITE);
+			storage3 << "v_modul" << v_modulation;
+			storage3.release();
+
+			std::cout << "-----------------------Finished convertions: " << d << std::endl;
+			//using opencv Mat
+
+		}
+
 	}
 };
 }
