@@ -202,7 +202,7 @@ bool CCapturador::CapturePatterns(int time,int device,int posX,int posY,bool use
 	for (int c = 0; c < camera.size(); c++)
 	{
 		std::stringstream oss;
-		oss << "aCam" << c+1;
+		oss << c;
 		SerializeCapturesDefault(m_vCaptures[c], oss.str());
 		camera[c]->stopCapture();
 	}
@@ -324,10 +324,16 @@ string CCapturador::SerializeCapturesDefault(vector<Mat> imagenes, string str)
 	{
 		std::ostringstream oss;
 		string ruta = "..//resources//Captures//";
+		//if (i<10)
+		//	oss << ruta << str << "-" << tiempo << "//Capture-0" << i << ".bmp";
+		//else
+		//	oss << ruta << str << "-" << tiempo << "//Capture-" << i << ".bmp";
+
 		if (i<10)
-			oss << ruta << str << "-" << tiempo << "//Capture-0" << i << ".bmp";
+			oss << "D://data//"<< str <<"-0" << i << ".bmp";
 		else
-			oss << ruta << str << "-" << tiempo << "//Capture-" << i << ".bmp";
+			oss << "D://data//"<< str <<"-" << i << ".bmp";
+
 		ruta = oss.str();
 		//if (b16)
 		//	cvSave(oss.str().c_str(),  imagenes[i].data);
