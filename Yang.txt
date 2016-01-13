@@ -1,3 +1,6 @@
-mkdir D:\data for startcapture: one time for one pair image. 
+----------------Capture function from:----------------------
+mkdir D:\data 
+
+for startcapture: one time for one pair image. 
 camera1: 0-00.bmp,0-01.bmp
 camera2: 1-00.bmp,1-01.bmp
